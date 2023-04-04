@@ -1,7 +1,18 @@
+import 'package:chatgpt/models/message.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+  ChatScreen({super.key});
+
+  final List<Message> messages = [
+    Message(content: "Hello", isUser: true, timestamp: DateTime.now()),
+    Message(content: "How are you?", isUser: false, timestamp: DateTime.now()),
+    Message(
+        content: "Fine,Thank you. And you?",
+        isUser: true,
+        timestamp: DateTime.now()),
+    Message(content: "I am fine.", isUser: false, timestamp: DateTime.now()),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -17,21 +28,12 @@ class ChatScreen extends StatelessWidget {
               // 聊天消息列表
               child: ListView.separated(
                 itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      const CircleAvatar(
-                        child: Text('A'),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text('Message $index'),
-                    ],
-                  );
+                  return MessageItem(message: messages[index]);
                 },
-                itemCount: 5, // 消息数量
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 8,
+                itemCount: messages.length, // 消息数量
+                separatorBuilder: (context, index) => const Divider(
+                  // 分割线
+                  height: 16,
                 ),
               ),
             ),
@@ -51,6 +53,33 @@ class ChatScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class MessageItem extends StatelessWidget {
+  const MessageItem({
+    super.key,
+    required this.message,
+  });
+
+  final Message message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        CircleAvatar(
+          backgroundColor: message.isUser ? Colors.blue : Colors.blueGrey,
+          child: Text(
+            message.isUser ? 'A' : 'GPT',
+          ),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        Text(message.content),
+      ],
     );
   }
 }
