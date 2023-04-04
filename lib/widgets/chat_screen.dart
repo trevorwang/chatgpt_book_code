@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chatgpt/injection.dart';
 import 'package:chatgpt/models/message.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +86,8 @@ class MessageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         CircleAvatar(
           backgroundColor: message.isUser ? Colors.blue : Colors.blueGrey,
@@ -94,7 +98,12 @@ class MessageItem extends StatelessWidget {
         const SizedBox(
           width: 8,
         ),
-        Text(message.content),
+        Flexible(
+          child: Container(
+            margin: const EdgeInsets.only(top: 12, right: 48),
+            child: Text(message.content),
+          ),
+        ),
       ],
     );
   }
