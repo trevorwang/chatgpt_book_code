@@ -142,9 +142,17 @@ class MessageItem extends StatelessWidget {
       children: [
         CircleAvatar(
           backgroundColor: message.isUser ? Colors.blue : Colors.blueGrey,
-          child: Text(
-            message.isUser ? 'A' : 'GPT',
-          ),
+          child: message.isUser
+              ? const Text(
+                  'A',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                )
+              : const Icon(
+                  Icons.android,
+                  color: Colors.white,
+                ),
         ),
         const SizedBox(
           width: 8,
