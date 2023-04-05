@@ -2,6 +2,7 @@ import 'package:chatgpt/injection.dart';
 import 'package:chatgpt/models/message.dart';
 import 'package:chatgpt/states/chat_ui_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../states/messge_state.dart';
@@ -11,7 +12,6 @@ class ChatScreen extends HookConsumerWidget {
   ChatScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(messageProvider);
     final chatUIState = ref.watch(chatUiProvider);
     return Scaffold(
       appBar: AppBar(
@@ -21,18 +21,9 @@ class ChatScreen extends HookConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Expanded(
+            const Expanded(
               // 聊天消息列表
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return MessageItem(message: messages[index]);
-                },
-                itemCount: messages.length, // 消息数量
-                separatorBuilder: (context, index) => const Divider(
-                  // 分割线
-                  height: 16,
-                ),
-              ),
+              child: ChatMessageList(),
             ),
             // 输入框
             TextField(
@@ -92,6 +83,36 @@ class ChatScreen extends HookConsumerWidget {
     } finally {
       ref.read(chatUiProvider.notifier).setRequestLoading(false);
     }
+  }
+}
+
+class ChatMessageList extends HookConsumerWidget {
+  const ChatMessageList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final messages = ref.watch(messageProvider);
+    final listController = useScrollController();
+    ref.listen(messageProvider, (previous, next) {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        listController.jumpTo(
+          listController.position.maxScrollExtent,
+        );
+      });
+    });
+    return ListView.separated(
+      controller: listController,
+      itemBuilder: (context, index) {
+        return MessageItem(message: messages[index]);
+      },
+      itemCount: messages.length, // 消息数量
+      separatorBuilder: (context, index) => const Divider(
+        // 分割线
+        height: 16,
+      ),
+    );
   }
 }
 
