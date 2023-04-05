@@ -69,12 +69,17 @@ class ChatScreen extends HookConsumerWidget {
 
   _requestChatGPT(WidgetRef ref, String content) async {
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
-    final res = await chatgpt.sendChat(content);
-    ref.read(chatUiProvider.notifier).setRequestLoading(false);
-    final text = res.choices.first.message?.content ?? "";
-    final message =
-        Message(content: text, isUser: false, timestamp: DateTime.now());
-    ref.read(messageProvider.notifier).addMessage(message);
+    try {
+      final res = await chatgpt.sendChat(content);
+      final text = res.choices.first.message?.content ?? "";
+      final message =
+          Message(content: text, isUser: false, timestamp: DateTime.now());
+      ref.read(messageProvider.notifier).addMessage(message);
+    } catch (err) {
+      logger.e("requestChatGPT error: $err", err);
+    } finally {
+      ref.read(chatUiProvider.notifier).setRequestLoading(false);
+    }
   }
 }
 
