@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:chatgpt/injection.dart';
 import 'package:chatgpt/models/message.dart';
+import 'package:chatgpt/states/chat_ui_state.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,6 +12,7 @@ class ChatScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(messageProvider);
+    final chatUIState = ref.watch(chatUiProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat'),
@@ -36,6 +36,7 @@ class ChatScreen extends HookConsumerWidget {
             ),
             // 输入框
             TextField(
+              enabled: !chatUIState.requestLoading,
               controller: _textController,
               decoration: InputDecoration(
                   hintText: 'Type a message', // 显示在输入框内的提示文字
@@ -67,7 +68,9 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   _requestChatGPT(WidgetRef ref, String content) async {
+    ref.read(chatUiProvider.notifier).setRequestLoading(true);
     final res = await chatgpt.sendChat(content);
+    ref.read(chatUiProvider.notifier).setRequestLoading(false);
     final text = res.choices.first.message?.content ?? "";
     final message =
         Message(content: text, isUser: false, timestamp: DateTime.now());
