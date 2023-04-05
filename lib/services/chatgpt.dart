@@ -19,4 +19,28 @@ class ChatGPTService {
     ]);
     return await client.sendChatCompletion(request);
   }
+
+  Future streamChat(
+    String content, {
+    Function(String text)? onSuccess,
+  }) async {
+    final request = ChatCompletionRequest(
+        model: Model.gpt3_5Turbo,
+        stream: true,
+        messages: [
+          ChatMessage(
+            content: content,
+            role: ChatMessageRole.user,
+          )
+        ]);
+    return await client.sendChatCompletionStream(
+      request,
+      onSuccess: (p0) {
+        final text = p0.choices.first.delta?.content;
+        if (text != null) {
+          onSuccess?.call(text);
+        }
+      },
+    );
+  }
 }
