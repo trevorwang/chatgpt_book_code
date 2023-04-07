@@ -2,7 +2,11 @@ import 'package:chatgpt/widgets/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-void main() {
+import 'data/database.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChatScreen(),
+      home: const ChatScreen(),
     );
   }
 }
