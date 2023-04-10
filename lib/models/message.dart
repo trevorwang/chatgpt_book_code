@@ -13,6 +13,21 @@ class Message {
     required this.isUser,
     required this.timestamp,
   });
+
+  @override
+  String toString() {
+    return "Message(id: $id, content: $content, isUser: $isUser, timestamp: $timestamp)";
+  }
+
+  @override
+  bool operator ==(other) {
+    if (identical(this, other)) return true;
+    return other is Message && other.id == id;
+  }
+
+  @override
+  int get hashCode =>
+      id.hashCode ^ content.hashCode ^ isUser.hashCode ^ timestamp.hashCode;
 }
 
 extension MessageExtension on Message {

@@ -10,11 +10,8 @@ abstract class MessageDao {
   @Query('SELECT * FROM Message WHERE id = :id')
   Future<Message?> findMessageById(String id);
 
-  @insert
-  Future<void> insertMessage(Message message);
-
-  @update
-  Future<void> updateMessage(Message message);
+  @Insert(onConflict: OnConflictStrategy.replace)
+  Future<void> upsertMessage(Message message);
 
   @delete
   Future<void> deleteMessage(Message message);

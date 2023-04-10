@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'data/database.dart';
+import 'injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  db = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   runApp(const ProviderScope(child: MyApp()));
 }
 
