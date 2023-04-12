@@ -21,6 +21,7 @@ class ChatScreen extends HookConsumerWidget {
               width: 200,
               child: ChatHistoryList(),
             ),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 children: const [

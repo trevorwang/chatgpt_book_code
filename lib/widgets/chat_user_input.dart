@@ -22,6 +22,7 @@ class UserInputWidget extends HookConsumerWidget {
       // maxLines: 3,
       controller: controller,
       focusNode: focusNode,
+
       autofocus: true,
       onSubmitted: (value) {
         if (chatUIState.requestLoading) return;
@@ -30,6 +31,9 @@ class UserInputWidget extends HookConsumerWidget {
         }
       },
       decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           hintText: 'Send a message...', // 显示在输入框内的提示文字
           suffixIcon: chatUIState.requestLoading
               ? const SizedBox(
@@ -39,7 +43,6 @@ class UserInputWidget extends HookConsumerWidget {
                       width: 24,
                       height: 24,
                       child: CircularProgressIndicator(
-                        color: Colors.blueGrey,
                         strokeWidth: 2,
                       ),
                     ),
