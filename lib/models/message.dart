@@ -7,16 +7,25 @@ class Message {
   final String content;
   final bool isUser;
   final DateTime timestamp;
+
+  @ForeignKey(
+    childColumns: ["session_id"],
+    parentColumns: ['id'],
+    entity: Message,
+  )
+  final int sessionId;
+
   Message({
     required this.id,
     required this.content,
     required this.isUser,
     required this.timestamp,
+    required this.sessionId,
   });
 
   @override
   String toString() {
-    return "Message(id: $id, content: $content, isUser: $isUser, timestamp: $timestamp)";
+    return "Message(id: $id, content: $content, isUser: $isUser, timestamp: $timestamp, sessionId: $sessionId)";
   }
 
   @override
@@ -36,12 +45,14 @@ extension MessageExtension on Message {
     String? content,
     bool? isUser,
     DateTime? timestamp,
+    int? sessionId,
   }) {
     return Message(
       id: id ?? this.id,
       content: content ?? this.content,
       isUser: isUser ?? this.isUser,
       timestamp: timestamp ?? this.timestamp,
+      sessionId: sessionId ?? this.sessionId,
     );
   }
 }
