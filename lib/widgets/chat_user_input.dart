@@ -16,22 +16,46 @@ class UserInputWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chatUIState = ref.watch(chatUiProvider);
     final controller = useTextEditingController();
+    final focusNode = useFocusNode();
     return TextField(
-      enabled: !chatUIState.requestLoading,
+      // minLines: 1,
+      // maxLines: 3,
       controller: controller,
+      focusNode: focusNode,
+      autofocus: true,
+      onSubmitted: (value) {
+        if (chatUIState.requestLoading) return;
+        if (value.isNotEmpty) {
+          _sendMessage(ref, controller, focusNode: focusNode);
+        }
+      },
       decoration: InputDecoration(
-          hintText: 'Type a message', // 显示在输入框内的提示文字
-          suffixIcon: IconButton(
-            onPressed: () {
-              // 这里处理发送事件
-              if (controller.text.isNotEmpty) {
-                _sendMessage(ref, controller);
-              }
-            },
-            icon: const Icon(
-              Icons.send,
-            ),
-          )),
+          hintText: 'Send a message...', // 显示在输入框内的提示文字
+          suffixIcon: chatUIState.requestLoading
+              ? const SizedBox(
+                  width: 40,
+                  child: Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.blueGrey,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                )
+              : IconButton(
+                  onPressed: () {
+                    // 这里处理发送事件
+                    if (controller.text.isNotEmpty) {
+                      _sendMessage(ref, controller, focusNode: focusNode);
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.send,
+                  ),
+                )),
     );
   }
 
@@ -74,7 +98,11 @@ class UserInputWidget extends HookConsumerWidget {
   }
 
   // 增加WidgetRef
-  _sendMessage(WidgetRef ref, TextEditingController controller) async {
+  _sendMessage(
+    WidgetRef ref,
+    TextEditingController controller, {
+    FocusNode? focusNode,
+  }) async {
     final content = controller.text;
     var sessionId =
         ref.watch(sessionWithMessageProvider).valueOrNull?.active ?? 0;
@@ -89,6 +117,8 @@ class UserInputWidget extends HookConsumerWidget {
         _createMessage(uuid.v4(), content, isUser: true, sessionId: sessionId);
     ref.read(messageProvider.notifier).upsertMessage(msg);
     controller.clear();
+
+    focusNode?.requestFocus();
     _requestChatGPT(ref, content, sessionId);
   }
 }

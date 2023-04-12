@@ -27,7 +27,10 @@ class ChatHistoryList extends HookConsumerWidget {
               ),
               for (var session in data.sessions)
                 ListTile(
-                  title: Text(session.title),
+                  title: Text(
+                    session.title,
+                    maxLines: 1,
+                  ),
                   selected: data.active == session.id,
                   onTap: () {
                     ref
