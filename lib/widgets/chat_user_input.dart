@@ -124,6 +124,11 @@ class UserInputWidget extends HookConsumerWidget {
     controller.clear();
 
     focusNode?.requestFocus();
+    List<Message> messageToSubmit = getValidMessages(ref, sessionId);
+    _requestChatGPT(ref, messageToSubmit, sessionId);
+  }
+
+  List<Message> getValidMessages(WidgetRef ref, int sessionId) {
     final messageToSubmit = ref.watch(messageProvider.select((value) =>
         value.where((element) => element.sessionId == sessionId).toList()));
 
@@ -131,6 +136,6 @@ class UserInputWidget extends HookConsumerWidget {
     while (tokens.length > 3000) {
       messageToSubmit.removeAt(0);
     }
-    _requestChatGPT(ref, messageToSubmit, sessionId);
+    return messageToSubmit;
   }
 }
