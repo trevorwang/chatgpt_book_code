@@ -23,6 +23,7 @@ class ChatMessageList extends HookConsumerWidget {
     final listController = useScrollController();
     ref.listen(messageProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {
+        if (!listController.hasClients) return;
         listController.jumpTo(
           listController.position.maxScrollExtent,
         );
