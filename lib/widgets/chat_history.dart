@@ -36,13 +36,11 @@ class ChatHistoryList extends HookConsumerWidget {
                   children: [
                     for (var session in data.sessions)
                       ListTile(
-                        // selectedColor: Colors.white,
-                        // textColor: Colors.white,
-                        // selectedTileColor: Colors.red,
                         title: Text(
                           session.title,
                           maxLines: 1,
                         ),
+                        leading: const Icon(Icons.messenger_outline),
                         selected: data.active == session.id,
                         onTap: () {
                           ref
