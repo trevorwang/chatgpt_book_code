@@ -41,11 +41,11 @@ class ChatHistoryList extends HookConsumerWidget {
                           maxLines: 1,
                         ),
                         leading: const Icon(Icons.messenger_outline),
-                        selected: data.active == session.id,
+                        selected: data.active?.id == session.id,
                         onTap: () {
                           ref
                               .read(sessionWithMessageProvider.notifier)
-                              .active(session.id);
+                              .active(session);
                         },
                       ),
                   ],

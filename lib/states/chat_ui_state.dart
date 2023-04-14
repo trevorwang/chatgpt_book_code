@@ -1,22 +1,34 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:openai_api/openai_api.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class ChatUiState {
-  final bool requestLoading;
-  ChatUiState({
-    this.requestLoading = false,
-  });
+part 'chat_ui_state.freezed.dart';
+part 'chat_ui_state.g.dart';
+
+@freezed
+class ChatState with _$ChatState {
+  const factory ChatState({
+    required bool requestLoading,
+    required Model model,
+  }) = _ChatUiState;
 }
 
-class ChatUiStateProvider extends StateNotifier<ChatUiState> {
-  ChatUiStateProvider() : super(ChatUiState());
-
-  void setRequestLoading(bool requestLoading) {
-    state = ChatUiState(
-      requestLoading: requestLoading,
+@riverpod
+class ChatUiSate extends _$ChatUiSate {
+  @override
+  ChatState build() {
+    return const ChatState(
+      requestLoading: false,
+      model: Model.gpt3_5Turbo,
     );
   }
-}
 
-final chatUiProvider = StateNotifierProvider<ChatUiStateProvider, ChatUiState>(
-  (ref) => ChatUiStateProvider(),
-);
+  void setRequestLoading(bool loading) {
+    state = state.copyWith(requestLoading: loading);
+  }
+
+  set model(Model model) {
+    state = state.copyWith(model: model);
+  }
+}

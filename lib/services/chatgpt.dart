@@ -24,10 +24,11 @@ class ChatGPTService {
 
   Future streamChat({
     List<Message> messages = const [],
+    Model model = Model.gpt3_5Turbo,
     Function(String text)? onSuccess,
   }) async {
     final request = ChatCompletionRequest(
-      model: Model.gpt3_5Turbo,
+      model: model,
       stream: true,
       messages: messages
           .map((e) => ChatMessage(
@@ -35,7 +36,13 @@ class ChatGPTService {
                 role:
                     e.isUser ? ChatMessageRole.user : ChatMessageRole.assistant,
               ))
-          .toList(),
+          .toList()
+        ..insert(
+            0,
+            const ChatMessage(
+                content:
+                    "你是一个AI助手，可以回答用户输入的问题，输出格式同ChatGPT官方客户端一致。涉及到公式的部分，使用latex语法。",
+                role: ChatMessageRole.system)),
     );
     return await client.sendChatCompletionStream(
       request,

@@ -17,9 +17,10 @@ class ChatMessageList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeSession =
-        ref.watch(sessionWithMessageProvider).valueOrNull?.active ?? 0;
-    final messages = ref.watch(messageProvider.select((value) =>
-        value.where((element) => element.sessionId == activeSession).toList()));
+        ref.watch(sessionWithMessageProvider).valueOrNull?.active;
+    final messages = ref.watch(messageProvider.select((value) => value
+        .where((element) => element.sessionId == activeSession?.id)
+        .toList()));
     final listController = useScrollController();
     ref.listen(messageProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {

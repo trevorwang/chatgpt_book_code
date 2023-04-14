@@ -1,8 +1,8 @@
-import 'dart:convert';
-
+import 'package:chatgpt/widgets/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -16,7 +16,7 @@ class UserInputWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatUIState = ref.watch(chatUiProvider);
+    final chatUIState = ref.watch(chatUiSateProvider);
     final controller = useTextEditingController();
     final focusNode = useFocusNode();
     return TextField(
@@ -81,11 +81,13 @@ class UserInputWidget extends HookConsumerWidget {
   }
 
   _requestChatGPT(WidgetRef ref, List<Message> messages, int sessionId) async {
-    ref.read(chatUiProvider.notifier).setRequestLoading(true);
+    ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
+    final model = ref.watch(chatUiSateProvider).model;
     try {
       final id = uuid.v4();
       await chatgpt.streamChat(
         messages: messages,
+        model: model,
         onSuccess: (text) {
           final msg = _createMessage(
             id,
@@ -98,7 +100,7 @@ class UserInputWidget extends HookConsumerWidget {
     } catch (err) {
       logger.e("requestChatGPT error: $err", err);
     } finally {
-      ref.read(chatUiProvider.notifier).setRequestLoading(false);
+      ref.read(chatUiSateProvider.notifier).setRequestLoading(false);
     }
   }
 
@@ -110,12 +112,13 @@ class UserInputWidget extends HookConsumerWidget {
   }) async {
     final content = controller.text;
     var sessionId =
-        ref.watch(sessionWithMessageProvider).valueOrNull?.active ?? 0;
+        ref.watch(sessionWithMessageProvider).valueOrNull?.active?.id ?? 0;
+    final model = ref.watch(chatUiSateProvider).model;
 
     if (sessionId <= 0) {
       final session = await ref
           .read(sessionWithMessageProvider.notifier)
-          .insertSession(Session(title: content));
+          .insertSession(Session(title: content, model: model.value));
       sessionId = session.id!;
     }
     final msg =
