@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -78,12 +80,12 @@ class UserInputWidget extends HookConsumerWidget {
     return message;
   }
 
-  _requestChatGPT(WidgetRef ref, String content, int sessionId) async {
+  _requestChatGPT(WidgetRef ref, List<Message> messages, int sessionId) async {
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
     try {
       final id = uuid.v4();
       await chatgpt.streamChat(
-        content,
+        messages: messages,
         onSuccess: (text) {
           final msg = _createMessage(
             id,
@@ -122,6 +124,13 @@ class UserInputWidget extends HookConsumerWidget {
     controller.clear();
 
     focusNode?.requestFocus();
-    _requestChatGPT(ref, content, sessionId);
+    final messageToSubmit = ref.watch(messageProvider.select((value) =>
+        value.where((element) => element.sessionId == sessionId).toList()));
+
+    final tokens = messageToSubmit.map((e) => e.content).join('\n');
+    while (tokens.length > 3000) {
+      messageToSubmit.removeAt(0);
+    }
+    _requestChatGPT(ref, messageToSubmit, sessionId);
   }
 }
