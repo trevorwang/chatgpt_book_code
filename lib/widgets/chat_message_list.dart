@@ -28,17 +28,27 @@ class ChatMessageList extends HookConsumerWidget {
         );
       });
     });
-    return ListView.separated(
-      controller: listController,
-      itemBuilder: (context, index) {
-        return MessageItem(message: messages[index]);
-      },
-      itemCount: messages.length, // 消息数量
-      separatorBuilder: (context, index) => const Divider(
-        // 分割线
-        height: 16,
-      ),
-    );
+    return messages.isEmpty
+        ? const Center(
+            child: Text(
+              "ChatGPT",
+              style: TextStyle(
+                fontSize: 36,
+                color: Colors.grey,
+              ),
+            ),
+          )
+        : ListView.separated(
+            controller: listController,
+            itemBuilder: (context, index) {
+              return MessageItem(message: messages[index]);
+            },
+            itemCount: messages.length, // 消息数量
+            separatorBuilder: (context, index) => const Divider(
+              // 分割线
+              height: 16,
+            ),
+          );
   }
 }
 
