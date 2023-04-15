@@ -1,8 +1,8 @@
 import 'package:chatgpt/widgets/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:holding_gesture/holding_gesture.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:openai_api/openai_api.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -13,6 +13,92 @@ import '../states/session_state.dart';
 
 class UserInputWidget extends HookConsumerWidget {
   const UserInputWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final voiceMode = ref.watch(chatUiSateProvider).voiceMode;
+    return Row(
+      children: [
+        IconButton(
+          onPressed: () {
+            ref.watch(chatUiSateProvider.notifier).voiceMode = !voiceMode;
+          },
+          icon: Icon(
+            voiceMode ? Icons.keyboard : Icons.multitrack_audio,
+            color: Colors.blue,
+            size: 28,
+          ),
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 48,
+            child: voiceMode ? const AudioInput() : const TextInputWidget(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AudioInput extends HookConsumerWidget {
+  const AudioInput({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recording = ref.watch(chatUiSateProvider).recording;
+    final uiState = ref.read(chatUiSateProvider.notifier);
+    final loading = ref.watch(chatUiSateProvider).requestLoading;
+    return loading
+        ? ElevatedButton(
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            onPressed: null,
+            child: const Text("Transcripting..."),
+          )
+        : HoldDetector(
+            onHold: () {
+              logger.v("on hold.....");
+              if (!recording) {
+                uiState.recording = true;
+                record.record();
+              }
+            },
+            onCancel: () async {
+              logger.v("on cancel.....");
+              uiState.recording = false;
+              final path = await record.stop();
+              if (path != null) {
+                ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
+                final text = await chatgpt.speechToText(Uri.parse(path).path);
+                ref.read(chatUiSateProvider.notifier).setRequestLoading(false);
+                __sendMessage(ref, text);
+                logger.v("convert to text $text");
+              }
+            },
+            child: ElevatedButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              onPressed: () {},
+              child: Text(recording ? "Recording... " : "Hold to say"),
+            ),
+          );
+  }
+}
+
+class TextInputWidget extends HookConsumerWidget {
+  const TextInputWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,46 +150,6 @@ class UserInputWidget extends HookConsumerWidget {
     );
   }
 
-  Message _createMessage(
-    String id,
-    String text, {
-    bool isUser = false,
-    int? sessionId,
-  }) {
-    final message = Message(
-      id: id,
-      content: text,
-      isUser: isUser,
-      timestamp: DateTime.now(),
-      sessionId: sessionId ?? 0,
-    );
-    return message;
-  }
-
-  _requestChatGPT(WidgetRef ref, List<Message> messages, int sessionId) async {
-    ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
-    final model = ref.watch(chatUiSateProvider).model;
-    try {
-      final id = uuid.v4();
-      await chatgpt.streamChat(
-        messages: messages,
-        model: model,
-        onSuccess: (text) {
-          final msg = _createMessage(
-            id,
-            text,
-            sessionId: sessionId,
-          );
-          ref.read(messageProvider.notifier).upsertMessage(msg);
-        },
-      );
-    } catch (err) {
-      logger.e("requestChatGPT error: $err", err);
-    } finally {
-      ref.read(chatUiSateProvider.notifier).setRequestLoading(false);
-    }
-  }
-
   // 增加WidgetRef
   _sendMessage(
     WidgetRef ref,
@@ -111,34 +157,80 @@ class UserInputWidget extends HookConsumerWidget {
     FocusNode? focusNode,
   }) async {
     final content = controller.text;
-    var sessionId =
-        ref.watch(sessionWithMessageProvider).valueOrNull?.active?.id ?? 0;
-    final model = ref.watch(chatUiSateProvider).model;
 
-    if (sessionId <= 0) {
-      final session = await ref
-          .read(sessionWithMessageProvider.notifier)
-          .insertSession(Session(title: content, model: model.value));
-      sessionId = session.id!;
-    }
-    final msg =
-        _createMessage(uuid.v4(), content, isUser: true, sessionId: sessionId);
-    ref.read(messageProvider.notifier).upsertMessage(msg);
     controller.clear();
-
     focusNode?.requestFocus();
-    List<Message> messageToSubmit = getValidMessages(ref, sessionId);
-    _requestChatGPT(ref, messageToSubmit, sessionId);
+    await __sendMessage(ref, content);
   }
+}
 
-  List<Message> getValidMessages(WidgetRef ref, int sessionId) {
-    final messageToSubmit = ref.watch(messageProvider.select((value) =>
-        value.where((element) => element.sessionId == sessionId).toList()));
-
-    final tokens = messageToSubmit.map((e) => e.content).join('\n');
-    while (tokens.length > 3000) {
-      messageToSubmit.removeAt(0);
-    }
-    return messageToSubmit;
+_requestChatGPT(WidgetRef ref, List<Message> messages, int sessionId) async {
+  ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
+  final activeSession =
+      ref.watch(sessionWithMessageProvider).valueOrNull?.active;
+  final model = ref.watch(chatUiSateProvider).model;
+  try {
+    final id = uuid.v4();
+    await chatgpt.streamChat(
+      messages: messages,
+      model: activeSession?.model.toModel() ?? model,
+      onSuccess: (text) {
+        final msg = _createMessage(
+          id,
+          text,
+          sessionId: sessionId,
+        );
+        ref.read(messageProvider.notifier).upsertMessage(msg);
+      },
+    );
+  } catch (err) {
+    logger.e("requestChatGPT error: $err", err);
+  } finally {
+    ref.read(chatUiSateProvider.notifier).setRequestLoading(false);
   }
+}
+
+List<Message> getValidMessages(WidgetRef ref, int sessionId) {
+  final messageToSubmit = ref.watch(messageProvider.select((value) =>
+      value.where((element) => element.sessionId == sessionId).toList()));
+
+  final tokens = messageToSubmit.map((e) => e.content).join('\n');
+  while (tokens.length > 3000 && messageToSubmit.length > 1) {
+    messageToSubmit.removeAt(0);
+  }
+  return messageToSubmit;
+}
+
+Message _createMessage(
+  String id,
+  String text, {
+  bool isUser = false,
+  int? sessionId,
+}) {
+  final message = Message(
+    id: id,
+    content: text,
+    isUser: isUser,
+    timestamp: DateTime.now(),
+    sessionId: sessionId ?? 0,
+  );
+  return message;
+}
+
+Future<void> __sendMessage(WidgetRef ref, String content) async {
+  var sessionId =
+      ref.watch(sessionWithMessageProvider).valueOrNull?.active?.id ?? 0;
+  final model = ref.watch(chatUiSateProvider).model;
+  if (sessionId <= 0) {
+    final session = await ref
+        .read(sessionWithMessageProvider.notifier)
+        .insertSession(Session(title: content, model: model.value));
+    sessionId = session.id!;
+  }
+  final msg =
+      _createMessage(uuid.v4(), content, isUser: true, sessionId: sessionId);
+  ref.read(messageProvider.notifier).upsertMessage(msg);
+
+  List<Message> messageToSubmit = getValidMessages(ref, sessionId);
+  _requestChatGPT(ref, messageToSubmit, sessionId);
 }

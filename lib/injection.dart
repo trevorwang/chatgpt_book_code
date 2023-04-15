@@ -1,5 +1,6 @@
 import 'package:chatgpt/data/database.dart';
 import 'package:chatgpt/services/chatgpt.dart';
+import 'package:chatgpt/services/record.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
@@ -23,3 +24,5 @@ Future<void> initDatabase() async {
     })
   ]).build();
 }
+
+final record = RecordingSeorvice();

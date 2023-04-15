@@ -11,6 +11,8 @@ class ChatState with _$ChatState {
   const factory ChatState({
     required bool requestLoading,
     required Model model,
+    required bool voiceMode,
+    required bool recording,
   }) = _ChatUiState;
 }
 
@@ -21,6 +23,8 @@ class ChatUiSate extends _$ChatUiSate {
     return const ChatState(
       requestLoading: false,
       model: Model.gpt3_5Turbo,
+      voiceMode: false,
+      recording: false,
     );
   }
 
@@ -30,5 +34,13 @@ class ChatUiSate extends _$ChatUiSate {
 
   set model(Model model) {
     state = state.copyWith(model: model);
+  }
+
+  set voiceMode(bool voiceMode) {
+    state = state.copyWith(voiceMode: voiceMode);
+  }
+
+  set recording(bool recording) {
+    state = state.copyWith(recording: recording);
   }
 }

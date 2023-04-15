@@ -1,6 +1,7 @@
 import 'package:chatgpt/env.dart';
 import 'package:openai_api/openai_api.dart';
 
+import '../injection.dart';
 import '../models/message.dart';
 
 class ChatGPTService {
@@ -53,5 +54,13 @@ class ChatGPTService {
         }
       },
     );
+  }
+
+  Future<String> speechToText(String path) async {
+    final res =
+        await client.createTrascription(TranscriptionRequest(file: path));
+
+    logger.v(res);
+    return res.text;
   }
 }
