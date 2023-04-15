@@ -1,80 +1,52 @@
-import 'package:chatgpt/states/chat_ui_state.dart';
-import 'package:chatgpt/states/session_state.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:openai_api/openai_api.dart';
-import 'package:collection/collection.dart';
 
-import 'chat_history.dart';
+import '../states/chat_ui_state.dart';
+import '../states/session_state.dart';
 import 'chat_message_list.dart';
 import 'chat_user_input.dart';
 
-class ChatScreen extends HookConsumerWidget {
-  const ChatScreen({super.key});
+class ChatWindowScreen extends HookConsumerWidget {
+  const ChatWindowScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(sessionWithMessageProvider
         .select((value) => value.valueOrNull?.active));
     final model = ref.watch(chatUiSateProvider).model;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              width: 200,
-              child: ChatHistoryList(),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Model: '),
-                      active == null
-                          ? DropdownButton<Model>(
-                              items: [Model.gpt3_5Turbo, Model.gpt4].map((e) {
-                                return DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.label),
-                                );
-                              }).toList(),
-                              value: model,
-                              onChanged: (Model? item) {
-                                if (item == null) return;
-                                ref.read(chatUiSateProvider.notifier).model =
-                                    item;
-                              },
-                            )
-                          : Text(active.model),
-                    ],
-                  ),
-
-                  const Expanded(
-                    // 聊天消息列表
-                    child: ChatMessageList(),
-                  ),
-                  // 输入框
-                  const UserInputWidget(),
-                ],
-              ),
-            )
+            const Text('Model: '),
+            active == null
+                ? DropdownButton<Model>(
+                    items: [Model.gpt3_5Turbo, Model.gpt4].map((e) {
+                      return DropdownMenuItem(
+                        value: e,
+                        child: Text(e.label),
+                      );
+                    }).toList(),
+                    value: model,
+                    onChanged: (Model? item) {
+                      if (item == null) return;
+                      ref.read(chatUiSateProvider.notifier).model = item;
+                    },
+                  )
+                : Text(active.model),
           ],
         ),
-      ),
-    );
-  }
-}
 
-extension ModelString on String {
-  Model toModel() {
-    return Model.values.where((e) => e.value == this).firstOrNull ??
-        Model.gpt3_5Turbo;
+        const Expanded(
+          // 聊天消息列表
+          child: ChatMessageList(),
+        ),
+        // 输入框
+        const UserInputWidget(),
+      ],
+    );
   }
 }
 
@@ -88,5 +60,12 @@ extension ModelLabel on Model {
       default:
         return value;
     }
+  }
+}
+
+extension ModelString on String {
+  Model toModel() {
+    return Model.values.where((e) => e.value == this).firstOrNull ??
+        Model.gpt3_5Turbo;
   }
 }
