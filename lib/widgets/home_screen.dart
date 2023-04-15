@@ -39,10 +39,12 @@ class HomeScreen extends HookConsumerWidget {
           //     ),
           //   ],
           // ),
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: const Icon(Icons.settings),
-          // )
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              GoRouter.of(context).push('/settings');
+            },
+          )
         ],
       ),
       body: const Padding(

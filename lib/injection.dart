@@ -5,6 +5,7 @@ import 'package:floor/floor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
+import 'package:localstorage/localstorage.dart';
 
 final chatgpt = ChatGPTService();
 
@@ -26,3 +27,5 @@ Future<void> initDatabase() async {
 }
 
 final record = RecordingSeorvice();
+
+final localStorage = LocalStorage('chatgpt');

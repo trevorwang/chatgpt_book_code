@@ -512,6 +512,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.1"
+  localstorage:
+    dependency: "direct main"
+    description:
+      name: localstorage
+      sha256: "1b5304491c85250b90807e0e2b3a6217d2739caea4871b820d42782572f880f4"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.1+2"
   logger:
     dependency: "direct main"
     description:
