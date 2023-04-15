@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:holding_gesture/holding_gesture.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -183,8 +185,20 @@ _requestChatGPT(WidgetRef ref, List<Message> messages, int sessionId) async {
         ref.read(messageProvider.notifier).upsertMessage(msg);
       },
     );
-  } catch (err) {
+  } on OpenaiException catch (err) {
     logger.e("requestChatGPT error: $err", err);
+
+    QuickAlert.show(
+        context: ref.context,
+        type: QuickAlertType.error,
+        text: err.error.message);
+  } catch (err) {
+    logger.e(" error: $err", err);
+
+    QuickAlert.show(
+        context: ref.context,
+        type: QuickAlertType.error,
+        text: "Unknown error");
   } finally {
     ref.read(chatUiSateProvider.notifier).setRequestLoading(false);
   }

@@ -52,6 +52,7 @@ dependencies:
   record: ^4.4.4
   holding_gesture: ^1.1.0
   path_provider: ^2.0.14
+  quickalert: ^1.0.1
 
 dev_dependencies:
   flutter_test:
