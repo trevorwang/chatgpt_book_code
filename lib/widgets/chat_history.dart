@@ -51,32 +51,10 @@ class ChatHistoryScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("History"),
-        ),
-        body: Column(
-          children: [
-            Container(
-              height: 48,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue, width: 1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  ref
-                      .read(sessionWithMessageProvider.notifier)
-                      .active(null)
-                      .then((value) => GoRouter.of(context).pop());
-                },
-                child: const Text("New chat"),
-              ),
-            ),
-            const Expanded(
-              child: ChatHistoryList(),
-            ),
-          ],
-        ));
+      appBar: AppBar(
+        title: const Text("History"),
+      ),
+      body: const ChatHistoryList(),
+    );
   }
 }
