@@ -157,6 +157,7 @@ class AudioInput extends HookConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                  backgroundColor: MaterialStateProperty.all(Colors.lightBlue),
                 ),
                 onPressed: () {},
                 child: Text(recording ? "Recording... " : "Hold to say"),
@@ -250,7 +251,7 @@ class UserInputWidget extends HookConsumerWidget {
             },
             icon: Icon(
               voiceMode ? Icons.keyboard : Icons.multitrack_audio,
-              color: Colors.blue,
+              color: Colors.lightBlue,
               size: 28,
             ),
           ),

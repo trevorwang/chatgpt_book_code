@@ -1,6 +1,5 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../states/session_state.dart';
@@ -26,10 +25,15 @@ class HomeScreenDesktop extends HookConsumerWidget {
                         children: [
                           const SizedBox(height: 24),
                           const NewChatButton(),
+                          const SizedBox(
+                            height: 8,
+                          ),
                           const Expanded(
                             child: ChatHistoryList(),
                           ),
+                          const Divider(),
                           ListTile(
+                            leading: const Icon(Icons.settings),
                             title: const Text("Settings"),
                             onTap: () {},
                           )
@@ -68,19 +72,26 @@ class NewChatButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       title: SizedBox(
-        height: 32,
-        child: OutlinedButton(
+        height: 40,
+        child: OutlinedButton.icon(
           style: ButtonStyle(
+            alignment: Alignment.centerLeft,
             shape: MaterialStateProperty.all(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
+            iconColor: MaterialStateProperty.all(Colors.black),
+            foregroundColor: MaterialStateProperty.all(Colors.black),
           ),
           onPressed: () {
             ref.read(sessionWithMessageProvider.notifier).active(null);
           },
-          child: const Text("New chat"),
+          icon: const Icon(
+            Icons.add,
+            size: 16,
+          ),
+          label: const Text("New chat"),
         ),
       ),
     );
