@@ -1,3 +1,4 @@
+import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -30,9 +31,10 @@ class ChatHistoryList extends HookConsumerWidget {
                     ref
                         .read(sessionWithMessageProvider.notifier)
                         .active(session)
-                        .then(
-                          (value) => GoRouter.of(context).pop(),
-                        );
+                        .then((value) {
+                      if (isDesktop()) return;
+                      GoRouter.of(context).pop();
+                    });
                   },
                 ),
             ],
