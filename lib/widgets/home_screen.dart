@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../states/session_state.dart';
+import 'chat_history.dart';
 import 'chat_screen.dart';
 
 class HomeScreen extends HookConsumerWidget {
@@ -12,10 +12,10 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.history),
-          onPressed: () => GoRouter.of(context).push('/history'),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.history),
+        //   onPressed: () => GoRouter.of(context).push('/history'),
+        // ),
         title: const Text('Chat'),
         actions: [
           // new button
@@ -26,26 +26,51 @@ class HomeScreen extends HookConsumerWidget {
             },
           ),
 
-          // PopupMenuButton<String>(
-          //   icon: const Icon(Icons.more_vert_outlined),
-          //   initialValue: "",
-          //   // Callback that sets the selected popup menu item.
-          //   onSelected: (String item) {},
-          //   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          //     PopupMenuItem<String>(
-          //       value: "1",
-          //       child: const Text('History'),
-          //       onTap: () => GoRouter.of(context).go('/history'),
-          //     ),
-          //   ],
-          // ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              GoRouter.of(context).push('/settings');
-            },
-          )
+          //   PopupMenuButton<String>(
+          //     icon: const Icon(Icons.more_vert_outlined),
+          //     initialValue: "",
+          //     // Callback that sets the selected popup menu item.
+          //     onSelected: (String item) {},
+          //     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          //       PopupMenuItem<String>(
+          //         value: "1",
+          //         child: const Text('History'),
+          //         onTap: () => GoRouter.of(context).go('/history'),
+          //       ),
+          //     ],
+          //   ),
+          //   IconButton(
+          //     icon: const Icon(Icons.settings),
+          //     onPressed: () {
+          //       GoRouter.of(context).push('/settings');
+          //     },
+          //   )
         ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Chat History',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            Expanded(
+              child: MediaQuery.removePadding(
+                // remove the top padding
+                context: context,
+                removeTop: true,
+                child: const ChatHistoryList(),
+              ),
+            ),
+          ],
+        ),
       ),
       body: const Padding(
         padding: EdgeInsets.all(8.0),
