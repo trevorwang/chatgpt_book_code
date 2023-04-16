@@ -135,11 +135,19 @@ class AudioInput extends HookConsumerWidget {
                 if (path != null) {
                   ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
                   final text = await chatgpt.speechToText(Uri.parse(path).path);
+                  logger.v("convert to text $text");
+                  if (text.isEmpty) {
+                    // ignore: use_build_context_synchronously
+                    QuickAlert.show(
+                        context: ref.context,
+                        type: QuickAlertType.error,
+                        text: "Please make sure you speak clearly");
+                  } else {
+                    __sendMessage(ref, text);
+                  }
                   ref
                       .read(chatUiSateProvider.notifier)
                       .setRequestLoading(false);
-                  __sendMessage(ref, text);
-                  logger.v("convert to text $text");
                 }
               },
               child: ElevatedButton(
