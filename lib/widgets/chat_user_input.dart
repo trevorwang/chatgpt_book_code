@@ -106,50 +106,55 @@ class AudioInput extends HookConsumerWidget {
     final recording = ref.watch(chatUiSateProvider).recording;
     final uiState = ref.read(chatUiSateProvider.notifier);
     final loading = ref.watch(chatUiSateProvider).requestLoading;
-    return loading
-        ? ElevatedButton(
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            onPressed: null,
-            child: const Text("Transcripting..."),
-          )
-        : HoldDetector(
-            onHold: () {
-              logger.v("on hold.....");
-              if (!recording) {
-                uiState.recording = true;
-                record.record();
-              }
-            },
-            onCancel: () async {
-              logger.v("on cancel.....");
-              uiState.recording = false;
-              final path = await record.stop();
-              if (path != null) {
-                ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
-                final text = await chatgpt.speechToText(Uri.parse(path).path);
-                ref.read(chatUiSateProvider.notifier).setRequestLoading(false);
-                __sendMessage(ref, text);
-                logger.v("convert to text $text");
-              }
-            },
-            child: ElevatedButton(
+    return SizedBox(
+      height: 48,
+      child: loading
+          ? ElevatedButton(
               style: ButtonStyle(
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
-              onPressed: () {},
-              child: Text(recording ? "Recording... " : "Hold to say"),
+              onPressed: null,
+              child: const Text("Transcripting..."),
+            )
+          : HoldDetector(
+              onHold: () {
+                logger.v("on hold.....");
+                if (!recording) {
+                  uiState.recording = true;
+                  record.record();
+                }
+              },
+              onCancel: () async {
+                logger.v("on cancel.....");
+                uiState.recording = false;
+                final path = await record.stop();
+                if (path != null) {
+                  ref.read(chatUiSateProvider.notifier).setRequestLoading(true);
+                  final text = await chatgpt.speechToText(Uri.parse(path).path);
+                  ref
+                      .read(chatUiSateProvider.notifier)
+                      .setRequestLoading(false);
+                  __sendMessage(ref, text);
+                  logger.v("convert to text $text");
+                }
+              },
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                onPressed: () {},
+                child: Text(recording ? "Recording... " : "Hold to say"),
+              ),
             ),
-          );
+    );
   }
 }
 
@@ -162,11 +167,10 @@ class TextInputWidget extends HookConsumerWidget {
     final controller = useTextEditingController();
     final focusNode = useFocusNode();
     return TextField(
-      // minLines: 1,
-      // maxLines: 3,
+      minLines: 1,
+      maxLines: 3,
       controller: controller,
       focusNode: focusNode,
-
       autofocus: true,
       onSubmitted: (value) {
         if (chatUIState.requestLoading) return;
@@ -179,30 +183,31 @@ class TextInputWidget extends HookConsumerWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         hintText: 'Send a message...', // 显示在输入框内的提示文字
-        // suffixIcon: SizedBox(
-        //   width: 40,
-        //   child: chatUIState.requestLoading
-        //       ? const Center(
-        //           child: SizedBox(
-        //             width: 24,
-        //             height: 24,
-        //             child: CircularProgressIndicator(
-        //               strokeWidth: 2,
-        //             ),
-        //           ),
-        //         )
-        //       : IconButton(
-        //           onPressed: () {
-        //             // 这里处理发送事件
-        //             if (controller.text.isNotEmpty) {
-        //               _sendMessage(ref, controller, focusNode: focusNode);
-        //             }
-        //           },
-        //           icon: const Icon(
-        //             Icons.send,
-        //           ),
-        //         ),
-        // ),
+
+        suffixIcon: SizedBox(
+          width: 40,
+          child: chatUIState.requestLoading
+              ? const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              : IconButton(
+                  onPressed: () {
+                    // 这里处理发送事件
+                    if (controller.text.isNotEmpty) {
+                      _sendMessage(ref, controller, focusNode: focusNode);
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.send,
+                  ),
+                ),
+        ),
       ),
     );
   }
@@ -227,24 +232,27 @@ class UserInputWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final voiceMode = ref.watch(chatUiSateProvider).voiceMode;
-    return Row(
-      children: [
-        IconButton(
-          onPressed: () {
-            ref.watch(chatUiSateProvider.notifier).voiceMode = !voiceMode;
-          },
-          icon: Icon(
-            voiceMode ? Icons.keyboard : Icons.multitrack_audio,
-            color: Colors.blue,
-            size: 28,
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              ref.watch(chatUiSateProvider.notifier).voiceMode = !voiceMode;
+            },
+            icon: Icon(
+              voiceMode ? Icons.keyboard : Icons.multitrack_audio,
+              color: Colors.blue,
+              size: 28,
+            ),
           ),
-        ),
-        Expanded(
-          child: SizedBox(
-            child: voiceMode ? const AudioInput() : const TextInputWidget(),
+          Expanded(
+            child: SizedBox(
+              child: voiceMode ? const AudioInput() : const TextInputWidget(),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

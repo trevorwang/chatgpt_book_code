@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../states/session_state.dart';
@@ -39,12 +40,12 @@ class HomeScreen extends HookConsumerWidget {
           //       ),
           //     ],
           //   ),
-          //   IconButton(
-          //     icon: const Icon(Icons.settings),
-          //     onPressed: () {
-          //       GoRouter.of(context).push('/settings');
-          //     },
-          //   )
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              GoRouter.of(context).push('/settings');
+            },
+          )
         ],
       ),
       drawer: Drawer(
