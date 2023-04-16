@@ -1,4 +1,6 @@
+import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:holding_gesture/holding_gesture.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -167,6 +169,10 @@ class AudioInput extends HookConsumerWidget {
   }
 }
 
+class SubmitAction extends Intent {}
+
+class LineBreakAction extends Intent {}
+
 class TextInputWidget extends HookConsumerWidget {
   const TextInputWidget({super.key});
 
@@ -175,50 +181,72 @@ class TextInputWidget extends HookConsumerWidget {
     final chatUIState = ref.watch(chatUiSateProvider);
     final controller = useTextEditingController();
     final focusNode = useFocusNode();
-    return TextField(
-      minLines: 1,
-      maxLines: 3,
-      controller: controller,
-      focusNode: focusNode,
-      autofocus: true,
-      onSubmitted: (value) {
-        if (chatUIState.requestLoading) return;
-        if (value.isNotEmpty) {
-          _sendMessage(ref, controller, focusNode: focusNode);
-        }
+    return Shortcuts(
+      shortcuts: {
+        LogicalKeySet(LogicalKeyboardKey.enter): SubmitAction(),
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.enter):
+            LineBreakAction(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.enter):
+            LineBreakAction(),
       },
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        hintText: 'Send a message...', // 显示在输入框内的提示文字
+      child: Actions(
+          actions: {
+            SubmitAction: CallbackAction<SubmitAction>(
+              onInvoke: (action) {
+                if (chatUIState.requestLoading) return;
+                if (_isValidText(controller.text)) {
+                  _sendMessage(ref, controller, focusNode: focusNode);
+                }
+                return null;
+              },
+            ),
+          },
+          child: TextField(
+            minLines: 1,
+            maxLines: 3,
+            controller: controller,
+            focusNode: focusNode,
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              hintText:
+                  'Send a message...${isDesktop() ? '(Alt + Enter to insert line break)' : ''}', // 显示在输入框内的提示文字
 
-        suffixIcon: SizedBox(
-          width: 40,
-          child: chatUIState.requestLoading
-              ? const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
-                  ),
-                )
-              : IconButton(
-                  onPressed: () {
-                    // 这里处理发送事件
-                    if (controller.text.isNotEmpty) {
-                      _sendMessage(ref, controller, focusNode: focusNode);
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.send,
-                  ),
-                ),
-        ),
-      ),
+              suffixIcon: SizedBox(
+                width: 40,
+                child: chatUIState.requestLoading
+                    ? const Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: () {
+                          // 这里处理发送事件
+                          if (_isValidText(controller.text)) {
+                            _sendMessage(ref, controller, focusNode: focusNode);
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.send,
+                        ),
+                      ),
+              ),
+            ),
+          )),
     );
+  }
+
+  bool _isValidText(String? text) {
+    if (text == null || text.trim().isEmpty) return false;
+    return true;
   }
 
   // 增加WidgetRef
