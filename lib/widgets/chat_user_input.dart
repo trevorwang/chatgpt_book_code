@@ -6,6 +6,7 @@ import 'package:holding_gesture/holding_gesture.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:tiktoken/tiktoken.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -18,9 +19,12 @@ import 'chat_screen.dart';
 List<Message> getValidMessages(WidgetRef ref, int sessionId) {
   final messageToSubmit = ref.watch(messageProvider.select((value) =>
       value.where((element) => element.sessionId == sessionId).toList()));
-
+  final sessionModel =
+      ref.watch(sessionWithMessageProvider).valueOrNull?.active?.model;
+  final activeModel = ref.watch(chatUiSateProvider).model;
   final tokens = messageToSubmit.map((e) => e.content).join('\n');
-  while (tokens.length > 3000 && messageToSubmit.length > 1) {
+  final encoding = encodingForModel(sessionModel ?? activeModel.value);
+  while (encoding.encode(tokens).length > 3000 && messageToSubmit.length > 1) {
     messageToSubmit.removeAt(0);
   }
   return messageToSubmit;
