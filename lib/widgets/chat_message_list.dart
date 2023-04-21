@@ -1,3 +1,5 @@
+import 'package:chatgpt/hooks/typing_cursor.dart';
+import 'package:chatgpt/states/chat_ui_state.dart';
 import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -23,6 +25,7 @@ class ChatMessageList extends HookConsumerWidget {
     final messages = ref.watch(messageProvider.select((value) => value
         .where((element) => element.sessionId == activeSession?.id)
         .toList()));
+    final uiState = ref.watch(chatUiSateProvider);
     final listController = useScrollController();
     ref.listen(messageProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {
@@ -51,7 +54,11 @@ class ChatMessageList extends HookConsumerWidget {
                       message: msg,
                       backgroudColor: Colors.green[200],
                     )
-                  : ReceivedMessageItem(message: msg);
+                  : ReceivedMessageItem(
+                      message: msg,
+                      isTyping: index == messages.length - 1 &&
+                          uiState.requestLoading,
+                    );
             },
             itemCount: messages.length, // 消息数量
             separatorBuilder: (context, index) => const Divider(
@@ -65,10 +72,12 @@ class ChatMessageList extends HookConsumerWidget {
 
 class MessageContentWidget extends StatelessWidget {
   final Message message;
+  final bool isTyping;
 
   const MessageContentWidget({
     super.key,
     required this.message,
+    this.isTyping = false,
   });
 
   @override
@@ -76,22 +85,25 @@ class MessageContentWidget extends StatelessWidget {
     return SelectionArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: MarkdownGenerator(
-          config: MarkdownConfig().copy(configs: [
-            const PreConfig().copy(
-              wrapper: (child, text) => CodeWrapperWidget(
-                text: text,
-                child: child,
+        children: [
+          ...MarkdownGenerator(
+            config: MarkdownConfig().copy(configs: [
+              const PreConfig().copy(
+                wrapper: (child, text) => CodeWrapperWidget(
+                  text: text,
+                  child: child,
+                ),
               ),
-            ),
-          ]),
-          generators: [
-            latexGenerator,
-          ],
-          inlineSyntaxes: [
-            LatexSyntax(),
-          ],
-        ).buildWidgets(message.content),
+            ]),
+            generators: [
+              latexGenerator,
+            ],
+            inlineSyntaxes: [
+              LatexSyntax(),
+            ],
+          ).buildWidgets(message.content),
+          if (isTyping) const TypingCursor(),
+        ],
       ),
     );
   }
@@ -147,11 +159,13 @@ class ReceivedMessageItem extends StatelessWidget {
   final Message message;
   final Color? backgroundColor;
   final double radius;
+  final bool isTyping;
   const ReceivedMessageItem({
     super.key,
     required this.message,
     this.backgroundColor,
     this.radius = 8,
+    this.isTyping = false,
   });
 
   @override
@@ -183,7 +197,10 @@ class ReceivedMessageItem extends StatelessWidget {
                 bottomRight: Radius.circular(radius),
               ),
             ),
-            child: MessageContentWidget(message: message),
+            child: MessageContentWidget(
+              message: message,
+              isTyping: isTyping,
+            ),
           ),
         ),
         SizedBox(
