@@ -20,7 +20,7 @@ class HomeScreenDesktop extends HookConsumerWidget {
               Row(
                 children: [
                   SizedBox(
-                    width: 200,
+                    width: 240,
                     child: Column(
                       children: [
                         const SizedBox(height: 24),
