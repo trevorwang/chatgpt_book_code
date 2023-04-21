@@ -47,7 +47,10 @@ class ChatMessageList extends HookConsumerWidget {
             itemBuilder: (context, index) {
               final msg = messages[index];
               return msg.isUser
-                  ? SentMessageItem(message: msg)
+                  ? SentMessageItem(
+                      message: msg,
+                      backgroudColor: Colors.green[200],
+                    )
                   : ReceivedMessageItem(message: msg);
             },
             itemCount: messages.length, // 消息数量
@@ -92,14 +95,19 @@ class MessageContentWidget extends StatelessWidget {
 
 class SentMessageItem extends StatelessWidget {
   final Message message;
+  final Color? backgroudColor;
+  final double radius;
 
   const SentMessageItem({
     super.key,
     required this.message,
+    this.backgroudColor,
+    this.radius = 8,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bg = backgroudColor ?? Colors.white;
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,20 +117,19 @@ class SentMessageItem extends StatelessWidget {
         ),
         Flexible(
           child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: bg,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(18),
-                bottomLeft: Radius.circular(18),
-                bottomRight: Radius.circular(18),
+                topLeft: Radius.circular(radius),
+                bottomLeft: Radius.circular(radius),
+                bottomRight: Radius.circular(radius),
               ),
             ),
             child: MessageContentWidget(message: message),
           ),
         ),
-        SizedBox(
-            width: 10, child: CustomPaint(painter: CustomShape(Colors.white))),
+        SizedBox(width: 10, child: CustomPaint(painter: CustomShape(bg))),
         const CircleAvatar(
           radius: 20,
           child: Text("A"),
@@ -134,21 +141,25 @@ class SentMessageItem extends StatelessWidget {
 
 class ReceivedMessageItem extends StatelessWidget {
   final Message message;
-
+  final Color? backgroundColor;
+  final double radius;
   const ReceivedMessageItem({
     super.key,
     required this.message,
+    this.backgroundColor,
+    this.radius = 8,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bg = backgroundColor ?? Colors.white;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 20,
-          backgroundColor: Colors.white,
+          backgroundColor: bg,
           child: SvgPicture.asset(
             "assets/images/chatgpt.svg",
           ),
@@ -156,16 +167,16 @@ class ReceivedMessageItem extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        CustomPaint(painter: CustomShape(Colors.white)),
+        CustomPaint(painter: CustomShape(bg)),
         Flexible(
           child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: bg,
               borderRadius: BorderRadius.only(
-                topRight: Radius.circular(18),
-                bottomLeft: Radius.circular(18),
-                bottomRight: Radius.circular(18),
+                topRight: Radius.circular(radius),
+                bottomLeft: Radius.circular(radius),
+                bottomRight: Radius.circular(radius),
               ),
             ),
             child: MessageContentWidget(message: message),
