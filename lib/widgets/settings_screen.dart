@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../injection.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -46,6 +48,7 @@ class SettingsWindow extends HookConsumerWidget {
                 ref.read(settingStateProvider.notifier).setBaseUrl(text);
                 break;
               default:
+                break;
             }
           },
         );

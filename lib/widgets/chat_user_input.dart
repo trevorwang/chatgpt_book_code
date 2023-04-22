@@ -166,7 +166,7 @@ class AudioInput extends HookConsumerWidget {
                   backgroundColor: MaterialStateProperty.all(Colors.lightBlue),
                 ),
                 onPressed: () {},
-                child: Text(recording ? "Recording... " : "Hold to say"),
+                child: Text(recording ? "Recording... " : "Hold to speak"),
               ),
             ),
     );

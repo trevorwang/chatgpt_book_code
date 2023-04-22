@@ -12,12 +12,8 @@ abstract class Settings with _$Settings {
     String? httpProxy,
     String? baseUrl,
   }) = _Settings;
-}
 
-@riverpod
-class SettingState extends _$SettingState {
-  @override
-  FutureOr<Settings> build() async {
+  static Future<Settings> load() async {
     final apiKey = await localStorage.getItem<String>(SettingKey.apiKey.name);
     final baseUrl = await localStorage.getItem<String>(SettingKey.baseUrl.name);
     final httpProxy =
@@ -29,12 +25,21 @@ class SettingState extends _$SettingState {
       httpProxy: httpProxy,
     );
   }
+}
+
+@riverpod
+class SettingState extends _$SettingState {
+  @override
+  FutureOr<Settings> build() async {
+    return Settings.load();
+  }
 
   Future<void> setApiKey(String? apiKey) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await localStorage.setItem(SettingKey.apiKey.name, apiKey);
       final settings = state.valueOrNull ?? const Settings();
+      chatgpt.loadConfig();
       return settings.copyWith(apiKey: apiKey);
     });
   }
@@ -44,6 +49,7 @@ class SettingState extends _$SettingState {
     state = await AsyncValue.guard(() async {
       await localStorage.setItem(SettingKey.baseUrl.name, baseUrl);
       final settings = state.valueOrNull ?? const Settings();
+      chatgpt.loadConfig();
       return settings.copyWith(baseUrl: baseUrl);
     });
   }
@@ -53,6 +59,7 @@ class SettingState extends _$SettingState {
     state = await AsyncValue.guard(() async {
       await localStorage.setItem(SettingKey.httpProxy.name, httpProxy);
       final settings = state.valueOrNull ?? const Settings();
+      chatgpt.loadConfig();
       return settings.copyWith(httpProxy: httpProxy);
     });
   }

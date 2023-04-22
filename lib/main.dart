@@ -9,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initWindow(); // only works for desktop
   await initDatabase();
+  await chatgpt.loadConfig();
   runApp(const ProviderScope(child: MyApp()));
 }
 
