@@ -18,10 +18,15 @@ abstract class Settings with _$Settings {
 class SettingState extends _$SettingState {
   @override
   FutureOr<Settings> build() async {
+    final apiKey = await localStorage.getItem<String>(SettingKey.apiKey.name);
+    final baseUrl = await localStorage.getItem<String>(SettingKey.baseUrl.name);
+    final httpProxy =
+        await localStorage.getItem<String>(SettingKey.httpProxy.name);
+
     return Settings(
-      apiKey: localStorage.getItem(SettingKey.apiKey.name) as String?,
-      baseUrl: localStorage.getItem(SettingKey.baseUrl.name) as String?,
-      httpProxy: localStorage.getItem(SettingKey.httpProxy.name) as String?,
+      apiKey: apiKey,
+      baseUrl: baseUrl,
+      httpProxy: httpProxy,
     );
   }
 

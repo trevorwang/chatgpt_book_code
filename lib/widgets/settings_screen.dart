@@ -3,45 +3,55 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SettingsScreen extends HookConsumerWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // desktop only
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: const SettingsWindow(),
+    );
+  }
+}
+
+class SettingsWindow extends HookConsumerWidget {
+  const SettingsWindow({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(settingListProvider);
     final controller = useTextEditingController();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: ListView.separated(
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return ListTile(
-            title: Text(item.title),
-            subtitle: Text(item.subtitle ?? 'Unknown'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () async {
-              final text = await showEditor(controller, item, ref);
-              if (text == null) return;
-              switch (item.key) {
-                case SettingKey.apiKey:
-                  ref.read(settingStateProvider.notifier).setApiKey(text);
-                  break;
-                case SettingKey.httpProxy:
-                  ref.read(settingStateProvider.notifier).setHttpProxy(text);
-                  break;
-                case SettingKey.baseUrl:
-                  ref.read(settingStateProvider.notifier).setBaseUrl(text);
-                  break;
-                default:
-              }
-            },
-          );
-        },
-        separatorBuilder: (context, index) => const Divider(),
-        itemCount: items.length,
-      ),
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return ListTile(
+          title: Text(item.title),
+          subtitle: Text(item.subtitle ?? 'Unknown'),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () async {
+            final text = await showEditor(controller, item, ref);
+            if (text == null) return;
+            switch (item.key) {
+              case SettingKey.apiKey:
+                ref.read(settingStateProvider.notifier).setApiKey(text);
+                break;
+              case SettingKey.httpProxy:
+                ref.read(settingStateProvider.notifier).setHttpProxy(text);
+                break;
+              case SettingKey.baseUrl:
+                ref.read(settingStateProvider.notifier).setBaseUrl(text);
+                break;
+              default:
+            }
+          },
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(),
+      itemCount: items.length,
     );
   }
 

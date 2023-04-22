@@ -1,4 +1,5 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:chatgpt/widgets/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -35,7 +36,19 @@ class HomeScreenDesktop extends HookConsumerWidget {
                         ListTile(
                           leading: const Icon(Icons.settings),
                           title: const Text("Settings"),
-                          onTap: () {},
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const AlertDialog(
+                                      title: Text("Settings"),
+                                      content: SizedBox(
+                                        height: 400,
+                                        width: 400,
+                                        child: SettingsWindow(),
+                                      ));
+                                });
+                          },
                         )
                       ],
                     ),
