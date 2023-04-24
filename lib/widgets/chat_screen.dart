@@ -99,6 +99,7 @@ class UserInputWidget extends HookConsumerWidget {
       content: content,
       isUser: true,
       timestamp: DateTime.now(),
+      sessionId: 1,
     );
     ref.read(messageProvider.notifier).upsertMessage(message); // 添加消息
     controller.clear();
@@ -117,6 +118,7 @@ class UserInputWidget extends HookConsumerWidget {
             content: text,
             isUser: false,
             timestamp: DateTime.now(),
+            sessionId: 1,
           );
           ref.read(messageProvider.notifier).upsertMessage(message);
         },

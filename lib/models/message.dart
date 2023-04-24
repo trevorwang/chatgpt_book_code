@@ -7,11 +7,21 @@ class Message {
   final String content;
   final bool isUser;
   final DateTime timestamp;
+
+  @ForeignKey(
+    childColumns: ["session_id"],
+    parentColumns: ['id'],
+    entity: Message,
+  )
+  @ColumnInfo(name: "session_id")
+  final int sessionId;
+
   Message({
     required this.id,
     required this.content,
     required this.isUser,
     required this.timestamp,
+    required this.sessionId,
   });
 
   @override
@@ -36,12 +46,14 @@ extension MessageExtension on Message {
     String? content,
     bool? isUser,
     DateTime? timestamp,
+    int? sessionId,
   }) {
     return Message(
       id: id ?? this.id,
       content: content ?? this.content,
       isUser: isUser ?? this.isUser,
       timestamp: timestamp ?? this.timestamp,
+      sessionId: sessionId ?? this.sessionId,
     );
   }
 }
