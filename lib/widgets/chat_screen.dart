@@ -2,13 +2,16 @@ import 'package:chatgpt/injection.dart';
 import 'package:chatgpt/markdown/latex.dart';
 import 'package:chatgpt/models/message.dart';
 import 'package:chatgpt/states/chat_ui_state.dart';
+import 'package:chatgpt/states/session_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
 import '../markdown/code_wrapper.dart';
-import '../states/messge_state.dart';
+import '../models/session.dart';
+import '../states/message_state.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -17,6 +20,22 @@ class ChatScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              GoRouter.of(context).push('/history');
+            },
+            icon: const Icon(Icons.history),
+          ),
+          IconButton(
+            onPressed: () {
+              ref
+                  .read(sessionStateNotifierProvider.notifier)
+                  .setActiveSession(null);
+            },
+            icon: const Icon(Icons.add),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -42,9 +61,9 @@ class ChatMessageList extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(messageProvider);
+    final messages = ref.watch(activeSessionMessagesProvider);
     final listController = useScrollController();
-    ref.listen(messageProvider, (previous, next) {
+    ref.listen(activeSessionMessagesProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {
         listController.jumpTo(
           listController.position.maxScrollExtent,
@@ -94,32 +113,55 @@ class UserInputWidget extends HookConsumerWidget {
   // 增加WidgetRef
   _sendMessage(WidgetRef ref, TextEditingController controller) async {
     final content = controller.text;
-    final message = Message(
-      id: uuid.v4(),
-      content: content,
-      isUser: true,
-      timestamp: DateTime.now(),
-      sessionId: 1,
-    );
-    ref.read(messageProvider.notifier).upsertMessage(message); // 添加消息
+    Message message = _createMessage(content);
+
+    var active = ref.watch(activeSessionProvider);
+    var sessionId = active?.id ?? 0;
+    if (sessionId <= 0) {
+      active = Session(title: content);
+      final id = await db.sessionDao.upsertSession(active);
+      sessionId = id;
+      ref
+          .read(sessionStateNotifierProvider.notifier)
+          .setActiveSession(active.copyWith(id: sessionId));
+    }
+
+    ref.read(messageProvider.notifier).upsertMessage(
+          message.copyWith(sessionId: sessionId),
+        ); // 添加消息
     controller.clear();
-    _requestChatGPT(ref, content);
+    _requestChatGPT(ref, content, sessionId: sessionId);
   }
 
-  _requestChatGPT(WidgetRef ref, String content) async {
+  Message _createMessage(
+    String content, {
+    String? id,
+    bool isUser = true,
+    int? sessionId,
+  }) {
+    final message = Message(
+      id: id ?? uuid.v4(),
+      content: content,
+      isUser: isUser,
+      timestamp: DateTime.now(),
+      sessionId: sessionId ?? 0,
+    );
+    return message;
+  }
+
+  _requestChatGPT(
+    WidgetRef ref,
+    String content, {
+    int? sessionId,
+  }) async {
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
     try {
       final id = uuid.v4();
       await chatgpt.streamChat(
         content,
         onSuccess: (text) {
-          final message = Message(
-            id: id,
-            content: text,
-            isUser: false,
-            timestamp: DateTime.now(),
-            sessionId: 1,
-          );
+          final message =
+              _createMessage(text, id: id, isUser: false, sessionId: sessionId);
           ref.read(messageProvider.notifier).upsertMessage(message);
         },
       );
