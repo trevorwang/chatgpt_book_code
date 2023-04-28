@@ -122,7 +122,7 @@ class UserInputWidget extends HookConsumerWidget {
       // final id = await db.sessionDao.upsertSession(active);
       active = await ref
           .read(sessionStateNotifierProvider.notifier)
-          .insertSession(active);
+          .upsertSesion(active);
       sessionId = active.id!;
       ref
           .read(sessionStateNotifierProvider.notifier)

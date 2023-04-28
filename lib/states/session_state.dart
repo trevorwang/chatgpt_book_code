@@ -27,7 +27,7 @@ class SessionStateNotifier extends _$SessionStateNotifier {
     return SessionState(sessionList: sessionList, activeSession: null);
   }
 
-  Future<Session> insertSession(Session session) async {
+  Future<Session> upsertSesion(Session session) async {
     var active = session;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
