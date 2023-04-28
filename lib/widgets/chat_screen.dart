@@ -1,8 +1,3 @@
-import 'package:chatgpt/injection.dart';
-import 'package:chatgpt/markdown/latex.dart';
-import 'package:chatgpt/models/message.dart';
-import 'package:chatgpt/states/chat_ui_state.dart';
-import 'package:chatgpt/states/session_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +7,11 @@ import 'package:markdown_widget/markdown_widget.dart';
 import '../markdown/code_wrapper.dart';
 import '../models/session.dart';
 import '../states/message_state.dart';
+import '../injection.dart';
+import '../markdown/latex.dart';
+import '../models/message.dart';
+import '../states/chat_ui_state.dart';
+import '../states/session_state.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -119,8 +119,11 @@ class UserInputWidget extends HookConsumerWidget {
     var sessionId = active?.id ?? 0;
     if (sessionId <= 0) {
       active = Session(title: content);
-      final id = await db.sessionDao.upsertSession(active);
-      sessionId = id;
+      // final id = await db.sessionDao.upsertSession(active);
+      active = await ref
+          .read(sessionStateNotifierProvider.notifier)
+          .insertSession(active);
+      sessionId = active.id!;
       ref
           .read(sessionStateNotifierProvider.notifier)
           .setActiveSession(active.copyWith(id: sessionId));
