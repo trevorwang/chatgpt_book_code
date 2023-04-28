@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
+import 'package:tiktoken/tiktoken.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -83,10 +85,11 @@ class UserInputWidget extends HookConsumerWidget {
     int? sessionId,
   }) async {
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
+    final messages = ref.watch(activeSessionMessagesProvider);
     try {
       final id = uuid.v4();
       await chatgpt.streamChat(
-        content,
+        messages,
         onSuccess: (text) {
           final message =
               _createMessage(text, id: id, isUser: false, sessionId: sessionId);
