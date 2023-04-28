@@ -11,7 +11,7 @@ import 'dao/session_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 2, entities: [Message, Session])
+@Database(version: 3, entities: [Message, Session])
 @TypeConverters([DateTimeConverter])
 abstract class AppDatabase extends FloorDatabase {
   MessageDao get messageDao;
