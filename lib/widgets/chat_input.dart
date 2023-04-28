@@ -1,3 +1,4 @@
+import 'package:chatgpt/widgets/chat_gpt_model_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -83,12 +84,15 @@ class UserInputWidget extends HookConsumerWidget {
     String content, {
     int? sessionId,
   }) async {
+    final uiState = ref.watch(chatUiProvider);
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
     final messages = ref.watch(activeSessionMessagesProvider);
+    final activeSession = ref.watch(activeSessionProvider);
     try {
       final id = uuid.v4();
       await chatgpt.streamChat(
         messages,
+        model: activeSession?.model.toModel() ?? uiState.model,
         onSuccess: (text) {
           final message =
               _createMessage(text, id: id, isUser: false, sessionId: sessionId);
