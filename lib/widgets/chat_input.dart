@@ -10,6 +10,44 @@ import '../states/chat_ui_state.dart';
 import '../states/message_state.dart';
 import '../states/session_state.dart';
 
+class ChatInputWidget extends HookConsumerWidget {
+  const ChatInputWidget({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final voiceMode = useState(false);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              voiceMode.value = !voiceMode.value;
+            },
+            icon: Icon(voiceMode.value ? Icons.keyboard : Icons.keyboard_voice),
+          ),
+          Expanded(
+            child: voiceMode.value
+                ? const AudioInputWidget()
+                : const UserInputWidget(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AudioInputWidget extends HookConsumerWidget {
+  const AudioInputWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ElevatedButton(
+      onPressed: () {},
+      child: const Text("Hold to speak"),
+    );
+  }
+}
+
 class UserInputWidget extends HookConsumerWidget {
   const UserInputWidget({super.key});
 
