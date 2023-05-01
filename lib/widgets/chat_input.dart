@@ -45,34 +45,44 @@ class AudioInputWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recording = useState(false);
-    return GestureDetector(
-      onLongPressStart: (details) {
-        recording.value = true;
-        recorder.start();
-      },
-      onLongPressEnd: (details) async {
-        recording.value = false;
-        final path = await recorder.stop();
-        if (path != null) {
-          try {
-            final text = await chatgpt.speechToText(Uri.parse(path).path);
-            if (text.trim().isNotEmpty) {
-              __sendMessage(ref, text);
-            }
-          } catch (err) {
-            logger.e("err: $err", err);
-          }
-        }
-      },
-      onLongPressCancel: () {
-        recording.value = false;
-        recorder.stop();
-      },
-      child: ElevatedButton(
-        onPressed: () {},
-        child: Text(recording.value ? "Recording..." : "Hold to speak"),
-      ),
-    );
+    final transcripting = useState(false);
+    final uiState = ref.watch(chatUiProvider);
+    return transcripting.value || uiState.requestLoading
+        ? ElevatedButton(
+            onPressed: null,
+            child:
+                Text(transcripting.value ? "Transcripting..." : "Loading..."))
+        : GestureDetector(
+            onLongPressStart: (details) {
+              recording.value = true;
+              recorder.start();
+            },
+            onLongPressEnd: (details) async {
+              recording.value = false;
+              final path = await recorder.stop();
+              if (path != null) {
+                try {
+                  transcripting.value = true;
+                  final text = await chatgpt.speechToText(Uri.parse(path).path);
+                  transcripting.value = false;
+                  if (text.trim().isNotEmpty) {
+                    await __sendMessage(ref, text);
+                  }
+                } catch (err) {
+                  logger.e("err: $err", err);
+                  transcripting.value = false;
+                }
+              }
+            },
+            onLongPressCancel: () {
+              recording.value = false;
+              recorder.stop();
+            },
+            child: ElevatedButton(
+              onPressed: () {},
+              child: Text(recording.value ? "Recording..." : "Hold to speak"),
+            ),
+          );
   }
 }
 
