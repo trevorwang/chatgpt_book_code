@@ -15,8 +15,8 @@ class ChatInputWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final voiceMode = useState(false);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    return SizedBox(
+      height: 36,
       child: Row(
         children: [
           IconButton(
@@ -31,7 +31,7 @@ class ChatInputWidget extends HookConsumerWidget {
           Expanded(
             child: voiceMode.value
                 ? const AudioInputWidget()
-                : const UserInputWidget(),
+                : const TextInputWidget(),
           ),
         ],
       ),
@@ -47,47 +47,51 @@ class AudioInputWidget extends HookConsumerWidget {
     final recording = useState(false);
     final transcripting = useState(false);
     final uiState = ref.watch(chatUiProvider);
-    return transcripting.value || uiState.requestLoading
-        ? ElevatedButton(
-            onPressed: null,
-            child:
-                Text(transcripting.value ? "Transcripting..." : "Loading..."))
-        : GestureDetector(
-            onLongPressStart: (details) {
-              recording.value = true;
-              recorder.start();
-            },
-            onLongPressEnd: (details) async {
-              recording.value = false;
-              final path = await recorder.stop();
-              if (path != null) {
-                try {
-                  transcripting.value = true;
-                  final text = await chatgpt.speechToText(Uri.parse(path).path);
-                  transcripting.value = false;
-                  if (text.trim().isNotEmpty) {
-                    await __sendMessage(ref, text);
+    return SizedBox(
+      height: 36,
+      child: transcripting.value || uiState.requestLoading
+          ? ElevatedButton(
+              onPressed: null,
+              child:
+                  Text(transcripting.value ? "Transcripting..." : "Loading..."))
+          : GestureDetector(
+              onLongPressStart: (details) {
+                recording.value = true;
+                recorder.start();
+              },
+              onLongPressEnd: (details) async {
+                recording.value = false;
+                final path = await recorder.stop();
+                if (path != null) {
+                  try {
+                    transcripting.value = true;
+                    final text =
+                        await chatgpt.speechToText(Uri.parse(path).path);
+                    transcripting.value = false;
+                    if (text.trim().isNotEmpty) {
+                      await __sendMessage(ref, text);
+                    }
+                  } catch (err) {
+                    logger.e("err: $err", err);
+                    transcripting.value = false;
                   }
-                } catch (err) {
-                  logger.e("err: $err", err);
-                  transcripting.value = false;
                 }
-              }
-            },
-            onLongPressCancel: () {
-              recording.value = false;
-              recorder.stop();
-            },
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text(recording.value ? "Recording..." : "Hold to speak"),
+              },
+              onLongPressCancel: () {
+                recording.value = false;
+                recorder.stop();
+              },
+              child: ElevatedButton(
+                onPressed: () {},
+                child: Text(recording.value ? "Recording..." : "Hold to speak"),
+              ),
             ),
-          );
+    );
   }
 }
 
-class UserInputWidget extends HookConsumerWidget {
-  const UserInputWidget({super.key});
+class TextInputWidget extends HookConsumerWidget {
+  const TextInputWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,6 +101,10 @@ class UserInputWidget extends HookConsumerWidget {
       enabled: !uiState.requestLoading,
       controller: controller,
       decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
           hintText: 'Type a message', // 显示在输入框内的提示文字
           suffixIcon: IconButton(
             onPressed: () {
