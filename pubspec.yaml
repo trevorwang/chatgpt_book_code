@@ -51,6 +51,8 @@ dependencies:
   go_router: ^6.5.8
   tiktoken: ^1.0.3
   collection: ^1.17.0
+  path_provider: ^2.0.14
+  record: ^4.4.4
 
 dev_dependencies:
   flutter_test:

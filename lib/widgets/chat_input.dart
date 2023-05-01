@@ -23,7 +23,10 @@ class ChatInputWidget extends HookConsumerWidget {
             onPressed: () {
               voiceMode.value = !voiceMode.value;
             },
-            icon: Icon(voiceMode.value ? Icons.keyboard : Icons.keyboard_voice),
+            icon: Icon(
+              voiceMode.value ? Icons.keyboard : Icons.keyboard_voice,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           Expanded(
             child: voiceMode.value
@@ -41,9 +44,24 @@ class AudioInputWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton(
-      onPressed: () {},
-      child: const Text("Hold to speak"),
+    final recording = useState(false);
+    return GestureDetector(
+      onLongPressStart: (details) {
+        recording.value = true;
+        recorder.start();
+      },
+      onLongPressEnd: (details) async {
+        recording.value = false;
+        recorder.stop();
+      },
+      onLongPressCancel: () {
+        recording.value = false;
+        recorder.stop();
+      },
+      child: ElevatedButton(
+        onPressed: () {},
+        child: Text(recording.value ? "Recording..." : "Hold to speak"),
+      ),
     );
   }
 }
