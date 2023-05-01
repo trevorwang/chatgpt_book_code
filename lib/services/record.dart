@@ -15,7 +15,7 @@ class RecordService {
       }
       final path = await getTemporaryDirectory();
 
-      final d = Directory("${path.absolute.path}/audios/");
+      final d = Directory("${path.absolute.path}/audios");
       await d.create(recursive: true);
 
       final file = File(

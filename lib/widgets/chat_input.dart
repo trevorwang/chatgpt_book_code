@@ -52,7 +52,17 @@ class AudioInputWidget extends HookConsumerWidget {
       },
       onLongPressEnd: (details) async {
         recording.value = false;
-        recorder.stop();
+        final path = await recorder.stop();
+        if (path != null) {
+          try {
+            final text = await chatgpt.speechToText(Uri.parse(path).path);
+            if (text.trim().isNotEmpty) {
+              __sendMessage(ref, text);
+            }
+          } catch (err) {
+            logger.e("err: $err", err);
+          }
+        }
       },
       onLongPressCancel: () {
         recording.value = false;
@@ -91,74 +101,79 @@ class UserInputWidget extends HookConsumerWidget {
           )),
     );
   }
+}
 
-  // 增加WidgetRef
-  _sendMessage(WidgetRef ref, TextEditingController controller) async {
-    final content = controller.text;
-    Message message = _createMessage(content);
-    final uiState = ref.watch(chatUiProvider);
-    var active = ref.watch(activeSessionProvider);
+// 增加WidgetRef
+_sendMessage(WidgetRef ref, TextEditingController controller) async {
+  final content = controller.text;
+  controller.clear();
+  return __sendMessage(ref, content);
+}
 
-    var sessionId = active?.id ?? 0;
-    if (sessionId <= 0) {
-      active = Session(title: content, model: uiState.model.value);
-      // final id = await db.sessionDao.upsertSession(active);
-      active = await ref
-          .read(sessionStateNotifierProvider.notifier)
-          .upsertSesion(active);
-      sessionId = active.id!;
-      ref
-          .read(sessionStateNotifierProvider.notifier)
-          .setActiveSession(active.copyWith(id: sessionId));
-    }
+__sendMessage(WidgetRef ref, String content) async {
+  Message message = _createMessage(content);
+  final uiState = ref.watch(chatUiProvider);
+  var active = ref.watch(activeSessionProvider);
 
-    ref.read(messageProvider.notifier).upsertMessage(
-          message.copyWith(sessionId: sessionId),
-        ); // 添加消息
-    controller.clear();
-    _requestChatGPT(ref, content, sessionId: sessionId);
+  var sessionId = active?.id ?? 0;
+  if (sessionId <= 0) {
+    active = Session(title: content, model: uiState.model.value);
+    // final id = await db.sessionDao.upsertSession(active);
+    active = await ref
+        .read(sessionStateNotifierProvider.notifier)
+        .upsertSesion(active);
+    sessionId = active.id!;
+    ref
+        .read(sessionStateNotifierProvider.notifier)
+        .setActiveSession(active.copyWith(id: sessionId));
   }
 
-  Message _createMessage(
-    String content, {
-    String? id,
-    bool isUser = true,
-    int? sessionId,
-  }) {
-    final message = Message(
-      id: id ?? uuid.v4(),
-      content: content,
-      isUser: isUser,
-      timestamp: DateTime.now(),
-      sessionId: sessionId ?? 0,
+  ref.read(messageProvider.notifier).upsertMessage(
+        message.copyWith(sessionId: sessionId),
+      ); // 添加消息
+
+  _requestChatGPT(ref, content, sessionId: sessionId);
+}
+
+Message _createMessage(
+  String content, {
+  String? id,
+  bool isUser = true,
+  int? sessionId,
+}) {
+  final message = Message(
+    id: id ?? uuid.v4(),
+    content: content,
+    isUser: isUser,
+    timestamp: DateTime.now(),
+    sessionId: sessionId ?? 0,
+  );
+  return message;
+}
+
+_requestChatGPT(
+  WidgetRef ref,
+  String content, {
+  int? sessionId,
+}) async {
+  final uiState = ref.watch(chatUiProvider);
+  ref.read(chatUiProvider.notifier).setRequestLoading(true);
+  final messages = ref.watch(activeSessionMessagesProvider);
+  final activeSession = ref.watch(activeSessionProvider);
+  try {
+    final id = uuid.v4();
+    await chatgpt.streamChat(
+      messages,
+      model: activeSession?.model.toModel() ?? uiState.model,
+      onSuccess: (text) {
+        final message =
+            _createMessage(text, id: id, isUser: false, sessionId: sessionId);
+        ref.read(messageProvider.notifier).upsertMessage(message);
+      },
     );
-    return message;
-  }
-
-  _requestChatGPT(
-    WidgetRef ref,
-    String content, {
-    int? sessionId,
-  }) async {
-    final uiState = ref.watch(chatUiProvider);
-    ref.read(chatUiProvider.notifier).setRequestLoading(true);
-    final messages = ref.watch(activeSessionMessagesProvider);
-    final activeSession = ref.watch(activeSessionProvider);
-    try {
-      final id = uuid.v4();
-      await chatgpt.streamChat(
-        messages,
-        model: activeSession?.model.toModel() ?? uiState.model,
-        onSuccess: (text) {
-          final message =
-              _createMessage(text, id: id, isUser: false, sessionId: sessionId);
-          ref.read(messageProvider.notifier).upsertMessage(message);
-        },
-      );
-    } catch (err) {
-      logger.e("requestChatGPT error: $err", err);
-    } finally {
-      ref.read(chatUiProvider.notifier).setRequestLoading(false);
-    }
+  } catch (err) {
+    logger.e("requestChatGPT error: $err", err);
+  } finally {
+    ref.read(chatUiProvider.notifier).setRequestLoading(false);
   }
 }

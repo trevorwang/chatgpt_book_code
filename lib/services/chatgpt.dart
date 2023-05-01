@@ -3,6 +3,8 @@ import 'package:chatgpt/models/message.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:tiktoken/tiktoken.dart';
 
+import '../injection.dart';
+
 class ChatGPTService {
   final client = OpenaiClient(
     config: OpenaiConfig(
@@ -41,6 +43,13 @@ class ChatGPTService {
         }
       },
     );
+  }
+
+  Future<String> speechToText(String path) async {
+    final res =
+        await client.createTrascription(TranscriptionRequest(file: path));
+    logger.v(res);
+    return res.text;
   }
 }
 
