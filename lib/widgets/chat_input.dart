@@ -98,25 +98,38 @@ class TextInputWidget extends HookConsumerWidget {
     final controller = useTextEditingController();
     final uiState = ref.watch(chatUiProvider);
     return TextField(
-      enabled: !uiState.requestLoading,
       controller: controller,
       decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          hintText: 'Type a message', // 显示在输入框内的提示文字
-          suffixIcon: IconButton(
-            onPressed: () {
-              // 这里处理发送事件
-              if (controller.text.isNotEmpty) {
-                _sendMessage(ref, controller);
-              }
-            },
-            icon: const Icon(
-              Icons.send,
-            ),
-          )),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        hintText: 'Type a message...', // 显示在输入框内的提示文字
+        suffixIcon: SizedBox(
+          width: 40,
+          child: uiState.requestLoading
+              ? const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              : IconButton(
+                  onPressed: () {
+                    // 这里处理发送事件
+                    if (controller.text.trim().isNotEmpty) {
+                      _sendMessage(ref, controller);
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.send,
+                  ),
+                ),
+        ),
+      ),
     );
   }
 }
