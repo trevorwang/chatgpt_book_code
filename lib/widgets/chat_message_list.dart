@@ -30,7 +30,10 @@ class ChatMessageList extends HookConsumerWidget {
       itemBuilder: (context, index) {
         final msg = messages[index];
         return msg.isUser
-            ? SentMessageItem(message: msg)
+            ? SentMessageItem(
+                message: msg,
+                backgroundColor: const Color(0xFF8FE869),
+              )
             : ReceivedMessageItem(message: msg);
       },
       itemCount: messages.length, // 消息数量
@@ -62,16 +65,16 @@ class ReceivedMessageItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         CircleAvatar(
-          backgroundColor: Colors.blue,
-          child: Container(
-            color: Colors.white,
-            child: SvgPicture.asset(
-              "assets/images/chatgpt.svg",
-            ),
+          backgroundColor: Colors.white,
+          child: SvgPicture.asset(
+            "assets/images/chatgpt.svg",
           ),
         ),
         const SizedBox(
           width: 8,
+        ),
+        CustomPaint(
+          painter: Triagnle(backgroundColor),
         ),
         Flexible(
           child: Container(
@@ -122,6 +125,9 @@ class SentMessageItem extends StatelessWidget {
             ),
           ),
         ),
+        CustomPaint(
+          painter: Triagnle(backgroundColor),
+        ),
         const SizedBox(
           width: 8,
         ),
@@ -165,5 +171,27 @@ class MessageContentWidget extends StatelessWidget {
         ).buildWidgets(message.content),
       ),
     );
+  }
+}
+
+class Triagnle extends CustomPainter {
+  final Color bgColor;
+
+  Triagnle(this.bgColor);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()..color = bgColor;
+
+    var path = Path();
+    path.lineTo(-5, 0);
+    path.lineTo(0, 10);
+    path.lineTo(5, 0);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }
