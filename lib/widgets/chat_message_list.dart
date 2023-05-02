@@ -37,15 +37,20 @@ class ChatMessageList extends HookConsumerWidget {
       separatorBuilder: (context, index) => const Divider(
         // 分割线
         height: 16,
+        color: Colors.transparent,
       ),
     );
   }
 }
 
 class ReceivedMessageItem extends StatelessWidget {
+  final Color backgroundColor;
+  final double radius;
   const ReceivedMessageItem({
     super.key,
     required this.message,
+    this.backgroundColor = Colors.white,
+    this.radius = 8,
   });
 
   final Message message;
@@ -70,6 +75,11 @@ class ReceivedMessageItem extends StatelessWidget {
         ),
         Flexible(
           child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(radius),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             margin: const EdgeInsets.only(right: 48),
             child: MessageContentWidget(
               message: message,
@@ -82,9 +92,13 @@ class ReceivedMessageItem extends StatelessWidget {
 }
 
 class SentMessageItem extends StatelessWidget {
+  final Color backgroundColor;
+  final double radius;
   const SentMessageItem({
     super.key,
     required this.message,
+    this.backgroundColor = Colors.white,
+    this.radius = 8,
   });
 
   final Message message;
@@ -97,6 +111,11 @@ class SentMessageItem extends StatelessWidget {
       children: [
         Flexible(
           child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(radius),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             margin: const EdgeInsets.only(left: 48),
             child: MessageContentWidget(
               message: message,
