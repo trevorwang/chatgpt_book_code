@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-final copyStateProvider = StateProvider((ref) => false);
-
-class CodeWrapperWidget extends HookConsumerWidget {
+class CodeWrapperWidget extends HookWidget {
   final Widget child;
   final String text;
   const CodeWrapperWidget({
@@ -14,11 +12,11 @@ class CodeWrapperWidget extends HookConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final hasCopied = ref.watch(copyStateProvider);
+  Widget build(BuildContext context) {
+    final copied = useState(false);
 
     final switchIcon =
-        Icon(hasCopied ? Icons.check : Icons.copy_rounded, key: UniqueKey());
+        Icon(copied.value ? Icons.check : Icons.copy_rounded, key: UniqueKey());
     return Stack(
       children: [
         child,
@@ -32,11 +30,11 @@ class CodeWrapperWidget extends HookConsumerWidget {
                 child: switchIcon,
               ),
               onTap: () async {
-                if (hasCopied) return;
+                if (copied.value) return;
                 await Clipboard.setData(ClipboardData(text: text));
-                ref.read(copyStateProvider.notifier).state = true;
+                copied.value = true;
                 Future.delayed(const Duration(seconds: 2), () {
-                  ref.read(copyStateProvider.notifier).state = false;
+                  copied.value = false;
                 });
               },
             ),
