@@ -8,6 +8,8 @@ import '../markdown/code_wrapper.dart';
 import '../markdown/latex.dart';
 import '../models/message.dart';
 import '../states/message_state.dart';
+import '../states/chat_ui_state.dart';
+import 'typing_cursor.dart';
 
 class ChatMessageList extends HookConsumerWidget {
   const ChatMessageList({
@@ -17,6 +19,7 @@ class ChatMessageList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(activeSessionMessagesProvider);
+    final uiState = ref.watch(chatUiProvider);
     final listController = useScrollController();
     ref.listen(activeSessionMessagesProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {
@@ -34,7 +37,10 @@ class ChatMessageList extends HookConsumerWidget {
                 message: msg,
                 backgroundColor: const Color(0xFF8FE869),
               )
-            : ReceivedMessageItem(message: msg);
+            : ReceivedMessageItem(
+                message: msg,
+                typing: index == messages.length - 1 && uiState.requestLoading,
+              );
       },
       itemCount: messages.length, // 消息数量
       separatorBuilder: (context, index) => const Divider(
@@ -49,11 +55,13 @@ class ChatMessageList extends HookConsumerWidget {
 class ReceivedMessageItem extends StatelessWidget {
   final Color backgroundColor;
   final double radius;
+  final bool typing;
   const ReceivedMessageItem({
     super.key,
     required this.message,
     this.backgroundColor = Colors.white,
     this.radius = 8,
+    this.typing = false,
   });
 
   final Message message;
@@ -86,6 +94,7 @@ class ReceivedMessageItem extends StatelessWidget {
             margin: const EdgeInsets.only(right: 48),
             child: MessageContentWidget(
               message: message,
+              typing: typing,
             ),
           ),
         ),
@@ -145,9 +154,11 @@ class SentMessageItem extends StatelessWidget {
 }
 
 class MessageContentWidget extends StatelessWidget {
+  final bool typing;
   const MessageContentWidget({
     super.key,
     required this.message,
+    this.typing = false,
   });
 
   final Message message;
@@ -158,17 +169,20 @@ class MessageContentWidget extends StatelessWidget {
     return SelectionArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: MarkdownGenerator(
-          config: MarkdownConfig().copy(configs: [
-            const PreConfig().copy(wrapper: codeWrapper),
-          ]),
-          generators: [
-            latexGenerator,
-          ],
-          inlineSyntaxes: [
-            LatexSyntax(),
-          ],
-        ).buildWidgets(message.content),
+        children: [
+          ...MarkdownGenerator(
+            config: MarkdownConfig().copy(configs: [
+              const PreConfig().copy(wrapper: codeWrapper),
+            ]),
+            generators: [
+              latexGenerator,
+            ],
+            inlineSyntaxes: [
+              LatexSyntax(),
+            ],
+          ).buildWidgets(message.content),
+          if (typing) const TypingCursor(),
+        ],
       ),
     );
   }
