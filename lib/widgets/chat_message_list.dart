@@ -198,9 +198,10 @@ class Triagnle extends CustomPainter {
     var paint = Paint()..color = bgColor;
 
     var path = Path();
-    path.lineTo(-5, 0);
-    path.lineTo(0, 10);
-    path.lineTo(5, 0);
+    path.lineTo(0, 0);
+    path.lineTo(5, 10);
+    path.lineTo(10, 0);
+    canvas.translate(-5, 0);
     canvas.drawPath(path, paint);
   }
 
