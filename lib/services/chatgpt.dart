@@ -54,8 +54,8 @@ class ChatGPTService {
 }
 
 final maxTokens = {
-  Model.gpt3_5Turbo: 4096,
-  Model.gpt4: 8192,
+  Model.gpt3_5Turbo: 4096 - 200,
+  Model.gpt4: 8192 - 300,
 };
 
 extension on List<ChatMessage> {
