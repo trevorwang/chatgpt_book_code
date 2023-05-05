@@ -68,26 +68,48 @@ class HomeScreen extends HookConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {
-              GoRouter.of(context).push('/history');
-            },
-            icon: const Icon(Icons.history),
-          ),
-          IconButton(
-            onPressed: () {
               ref
                   .read(sessionStateNotifierProvider.notifier)
                   .setActiveSession(null);
             },
             icon: const Icon(Icons.add),
           ),
-          IconButton(
-              onPressed: () {
-                GoRouter.of(context).push('/settings');
-              },
-              icon: const Icon(Icons.settings)),
         ],
       ),
       body: const ChatScreen(),
+      drawer: Drawer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 88,
+              child: DrawerHeader(
+                decoration:
+                    BoxDecoration(color: Theme.of(context).primaryColor),
+                child: const Text(
+                  "Chat History",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+            Expanded(
+              child: MediaQuery.removePadding(
+                removeTop: true,
+                context: context,
+                child: const ChatHistoryWindow(),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text("Settings"),
+              onTap: () {
+                Navigator.of(context).pop();
+                GoRouter.of(context).push('/settings');
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
