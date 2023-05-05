@@ -6,23 +6,32 @@ class TypingCursor extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final opacity = useState<double>(0.0);
-    return TweenAnimationBuilder(
-      tween: Tween<double>(begin: 1, end: opacity.value),
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.ease,
-      builder: (_, double o, __) => Opacity(
-        opacity: o,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          width: 6,
-          height: 12,
-          color: Colors.black,
-        ),
+    final ac = useAnimationController(
+      duration: const Duration(milliseconds: 400),
+    );
+
+    ac.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        ac.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        ac.forward();
+      }
+    });
+
+    final opacity = useAnimation(Tween<double>(begin: 0, end: 1)
+        .chain(CurveTween(curve: Curves.easeIn))
+        .animate(ac));
+    if (!ac.isAnimating) {
+      ac.forward();
+    }
+    return Opacity(
+      opacity: opacity,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        width: 6,
+        height: 12,
+        color: Colors.black,
       ),
-      onEnd: () {
-        opacity.value = opacity.value == 1.0 ? 0.0 : 1.0;
-      },
     );
   }
 }
