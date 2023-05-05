@@ -85,7 +85,11 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
           : Row(
               children: [
                 Expanded(
-                  child: Text(i.title),
+                  child: Text(
+                    i.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 IconButton(
                   onPressed: () {
