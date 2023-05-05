@@ -13,7 +13,7 @@ final mobileRouter = GoRouter(routes: [
   ),
   GoRoute(
     path: '/history',
-    builder: (context, state) => const ChatHistory(),
+    builder: (context, state) => const ChatHistoryScreen(),
   ),
   GoRoute(
     path: '/settings',

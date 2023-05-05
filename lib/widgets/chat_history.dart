@@ -5,24 +5,33 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/session.dart';
 import '../states/session_state.dart';
 
-class ChatHistory extends HookConsumerWidget {
-  const ChatHistory({super.key});
+class ChatHistoryScreen extends StatelessWidget {
+  const ChatHistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("History")),
+      body: const ChatHistoryWindow(),
+    );
+  }
+}
+
+class ChatHistoryWindow extends HookConsumerWidget {
+  const ChatHistoryWindow({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(sessionStateNotifierProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text("History")),
-      body: Center(
-        child: state.when(
-            data: (state) {
-              return ListView(children: [
-                for (var i in state.sessionList) ChatHistoryItemWidget(i: i),
-              ]);
-            },
-            error: (err, stack) => Text("$err"),
-            loading: () => const CircularProgressIndicator()),
-      ),
+    return Center(
+      child: state.when(
+          data: (state) {
+            return ListView(children: [
+              for (var i in state.sessionList) ChatHistoryItemWidget(i: i),
+            ]);
+          },
+          error: (err, stack) => Text("$err"),
+          loading: () => const CircularProgressIndicator()),
     );
   }
 }
