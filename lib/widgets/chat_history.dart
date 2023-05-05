@@ -1,3 +1,4 @@
+import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -102,7 +103,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
             ),
       onTap: () {
         ref.read(sessionStateNotifierProvider.notifier).setActiveSession(i);
-        Navigator.of(context).pop();
+        if (!isDesktop()) Navigator.of(context).pop();
       },
       selected: state?.activeSession?.id == i.id,
     );
@@ -129,6 +130,9 @@ Future _deleteConfirm(
                 ref
                     .read(sessionStateNotifierProvider.notifier)
                     .deleteSession(session);
+                ref
+                    .read(sessionStateNotifierProvider.notifier)
+                    .setActiveSession(null);
                 Navigator.of(context).pop();
               },
               child: const Text("Delete"),
