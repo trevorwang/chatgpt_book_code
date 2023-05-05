@@ -30,7 +30,12 @@ class ChatScreen extends HookConsumerWidget {
                   .setActiveSession(null);
             },
             icon: const Icon(Icons.add),
-          )
+          ),
+          IconButton(
+              onPressed: () {
+                GoRouter.of(context).push('/settings');
+              },
+              icon: const Icon(Icons.settings)),
         ],
       ),
       body: Container(

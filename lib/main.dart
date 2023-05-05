@@ -7,6 +7,7 @@ import 'router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupDatabse();
+  await chatgpt.loadConfig();
   runApp(const ProviderScope(child: MyApp()));
 }
 

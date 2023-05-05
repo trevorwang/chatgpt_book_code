@@ -54,6 +54,7 @@ dependencies:
   path_provider: ^2.0.14
   record: ^4.4.4
   flutter_svg: ^1.1.6
+  localstorage: ^4.0.1+2
 
 dev_dependencies:
   flutter_test:
