@@ -1,12 +1,15 @@
+import 'package:chatgpt/utils.dart';
 import 'package:chatgpt/widgets/chat_history.dart';
-import 'package:chatgpt/widgets/chat_screen.dart';
+import 'package:chatgpt/widgets/home_screen.dart';
 import 'package:chatgpt/widgets/settings_screen.dart';
 import 'package:go_router/go_router.dart';
 
-final router = GoRouter(routes: [
+final router = isDesktop() ? desktopRouter : mobileRouter;
+
+final mobileRouter = GoRouter(routes: [
   GoRoute(
     path: "/",
-    builder: (context, state) => const ChatScreen(),
+    builder: (context, state) => const HomeScreen(),
   ),
   GoRoute(
     path: '/history',
@@ -15,5 +18,12 @@ final router = GoRouter(routes: [
   GoRoute(
     path: '/settings',
     builder: (context, state) => const SettingsScreen(),
+  ),
+]);
+
+final desktopRouter = GoRouter(routes: [
+  GoRoute(
+    path: "/",
+    builder: (context, state) => const DesktopHomeScreen(),
   ),
 ]);

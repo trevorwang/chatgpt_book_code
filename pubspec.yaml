@@ -55,6 +55,7 @@ dependencies:
   record: ^4.4.4
   flutter_svg: ^1.1.6
   localstorage: ^4.0.1+2
+  bitsdojo_window: ^0.1.5
 
 dev_dependencies:
   flutter_test:
