@@ -784,6 +784,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.3"
+  quickalert:
+    dependency: "direct main"
+    description:
+      name: quickalert
+      sha256: "33a52870b2a87c55d0649d0cd228efaa2368d5df39231fdecebb71f349a9b221"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   record:
     dependency: "direct main"
     description:

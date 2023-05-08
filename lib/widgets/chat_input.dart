@@ -2,6 +2,8 @@ import 'package:chatgpt/widgets/chat_gpt_model_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -71,8 +73,17 @@ class AudioInputWidget extends HookConsumerWidget {
                     if (text.trim().isNotEmpty) {
                       await __sendMessage(ref, text);
                     }
+                  } on OpenaiException catch (e) {
+                    logger.e("err: $e", e);
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      title: "Error",
+                      text: e.error.message,
+                    );
                   } catch (err) {
                     logger.e("err: $err", err);
+                  } finally {
                     transcripting.value = false;
                   }
                 }
@@ -202,7 +213,21 @@ _requestChatGPT(
         ref.read(messageProvider.notifier).upsertMessage(message);
       },
     );
+  } on OpenaiException catch (err) {
+    QuickAlert.show(
+      context: ref.context,
+      type: QuickAlertType.error,
+      title: "Error",
+      text: err.error.message,
+    );
+    logger.e("requestChatGPT error: $err", err);
   } catch (err) {
+    QuickAlert.show(
+      context: ref.context,
+      type: QuickAlertType.error,
+      title: "Error",
+      text: "Unkown error",
+    );
     logger.e("requestChatGPT error: $err", err);
   } finally {
     ref.read(chatUiProvider.notifier).setRequestLoading(false);
