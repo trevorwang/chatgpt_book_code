@@ -50,66 +50,75 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
     final state = ref.watch(sessionStateNotifierProvider).valueOrNull;
     final editMode = useState(false);
     final controller = useTextEditingController();
+    final hover = useState(false);
     controller.text = i.title;
-    return ListTile(
-      title: editMode.value
-          ? Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                  ),
+    return MouseRegion(
+      onEnter: (event) => hover.value = true,
+      onExit: (event) => hover.value = false,
+      child: Material(
+        child: ListTile(
+          title: editMode.value
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        final text = controller.text;
+                        if (text.trim().isNotEmpty) {
+                          ref
+                              .read(sessionStateNotifierProvider.notifier)
+                              .updateSesion(
+                                i.copyWith(title: text.trim()),
+                              );
+                          editMode.value = false;
+                        }
+                      },
+                      icon: const Icon(Icons.save),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        editMode.value = false;
+                      },
+                      icon: const Icon(Icons.cancel),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        i.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (hover.value || !isDesktop())
+                      IconButton(
+                        onPressed: () {
+                          editMode.value = true;
+                        },
+                        icon: const Icon(Icons.edit),
+                      ),
+                    if (hover.value || !isDesktop())
+                      IconButton(
+                        onPressed: () {
+                          _deleteConfirm(context, ref, i);
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () {
-                    final text = controller.text;
-                    if (text.trim().isNotEmpty) {
-                      ref
-                          .read(sessionStateNotifierProvider.notifier)
-                          .upsertSesion(
-                            i.copyWith(title: text.trim()),
-                          );
-                      editMode.value = false;
-                    }
-                  },
-                  icon: const Icon(Icons.save),
-                ),
-                IconButton(
-                  onPressed: () {
-                    editMode.value = false;
-                  },
-                  icon: const Icon(Icons.cancel),
-                ),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    i.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    editMode.value = true;
-                  },
-                  icon: const Icon(Icons.edit),
-                ),
-                IconButton(
-                  onPressed: () {
-                    _deleteConfirm(context, ref, i);
-                  },
-                  icon: const Icon(Icons.delete),
-                ),
-              ],
-            ),
-      onTap: () {
-        ref.read(sessionStateNotifierProvider.notifier).setActiveSession(i);
-        if (!isDesktop()) Navigator.of(context).pop();
-      },
-      selected: state?.activeSession?.id == i.id,
+          onTap: () {
+            ref.read(sessionStateNotifierProvider.notifier).setActiveSession(i);
+            if (!isDesktop()) Navigator.of(context).pop();
+          },
+          selected: state?.activeSession?.id == i.id,
+        ),
+      ),
     );
   }
 }

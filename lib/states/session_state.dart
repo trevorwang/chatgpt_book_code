@@ -39,6 +39,16 @@ class SessionStateNotifier extends _$SessionStateNotifier {
     return active;
   }
 
+  Future<void> updateSesion(Session session) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final id = await db.sessionDao.upsertSession(session);
+      return SessionState(
+          sessionList: await _fetchData(),
+          activeSession: state.valueOrNull?.activeSession);
+    });
+  }
+
   Future<void> deleteSession(Session session) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
