@@ -67,8 +67,7 @@ class AudioInputWidget extends HookConsumerWidget {
                 if (path != null) {
                   try {
                     transcripting.value = true;
-                    final text =
-                        await chatgpt.speechToText(Uri.parse(path).path);
+                    final text = await chatgpt.speechToText(path);
                     transcripting.value = false;
                     if (text.trim().isNotEmpty) {
                       await __sendMessage(ref, text);
