@@ -23,7 +23,7 @@ class RecordService {
       logger.v('start path: ${file.path}');
 
       await r.start(
-        path: Uri.file(file.path).toString(),
+        path: isApplePlatform() ? Uri.file(file.path).toString() : file.path,
       );
     }
   }
@@ -31,8 +31,13 @@ class RecordService {
   Future<String?> stop() async {
     final path = await r.stop();
     logger.v('stop path: $path');
-    return path;
+    if (path == null) return null;
+    return isApplePlatform() ? Uri.parse(path).toFilePath() : path;
   }
 
   Future<bool> get isRecording => r.isRecording();
+}
+
+bool isApplePlatform() {
+  return Platform.isIOS || Platform.isMacOS;
 }
