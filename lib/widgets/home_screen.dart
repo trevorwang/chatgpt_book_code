@@ -81,15 +81,11 @@ class HomeScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 88,
-              child: DrawerHeader(
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColor),
-                child: const Text(
-                  "Chat History",
-                  style: TextStyle(color: Colors.white),
-                ),
+            DrawerHeader(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+              child: const Text(
+                "Chat History",
+                style: TextStyle(color: Colors.white, fontSize: 22),
               ),
             ),
             Expanded(
