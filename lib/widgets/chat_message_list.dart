@@ -1,3 +1,6 @@
+import 'package:chatgpt/injection.dart';
+import 'package:chatgpt/states/session_state.dart';
+import 'package:chatgpt/tools/error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +13,37 @@ import '../models/message.dart';
 import '../states/message_state.dart';
 import '../states/chat_ui_state.dart';
 import 'typing_cursor.dart';
+
+class ChatMessageListWidget extends HookConsumerWidget {
+  const ChatMessageListWidget({
+    super.key,
+  });
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final active = ref.watch(activeSessionProvider);
+    return Column(
+      children: [
+        const Expanded(
+          child: ChatMessageList(),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () {
+                if (active != null) {
+                  handleError(
+                      context, () => exportService.exportMarkdown(active));
+                }
+              },
+              icon: const Icon(Icons.text_snippet),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
 
 class ChatMessageList extends HookConsumerWidget {
   const ChatMessageList({

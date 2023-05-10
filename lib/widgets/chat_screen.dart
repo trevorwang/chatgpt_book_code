@@ -25,7 +25,7 @@ class ChatScreen extends HookConsumerWidget {
           ),
           const Expanded(
             // 聊天消息列表
-            child: ChatMessageList(),
+            child: ChatMessageListWidget(),
           ),
           const Divider(
             indent: 0,
