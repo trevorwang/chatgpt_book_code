@@ -21,10 +21,15 @@ class ChatMessageListWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeSessionProvider);
+    final scrollController = useScrollController();
+    final chatListKey = GlobalKey();
     return Column(
+      key: chatListKey,
       children: [
-        const Expanded(
-          child: ChatMessageList(),
+        Expanded(
+          child: ChatMessageList(
+            listController: scrollController,
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -38,6 +43,32 @@ class ChatMessageListWidget extends HookConsumerWidget {
               },
               icon: const Icon(Icons.text_snippet),
             ),
+            IconButton(
+              onPressed: () {
+                if (active != null) {
+                  final renderbox = chatListKey.currentContext!
+                      .findRenderObject() as RenderBox;
+
+                  scrollController.animateTo(
+                    scrollController.position.maxScrollExtent,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.linear,
+                  );
+                  // Future.delayed(const Duration(milliseconds: 500));
+                  final height = scrollController.position.maxScrollExtent +
+                      scrollController.position.viewportDimension;
+                  handleError(
+                    context,
+                    () => exportService.exportImage(
+                      active,
+                      context: ref.context,
+                      targetSize: Size(renderbox.size.width + 32, height + 48),
+                    ),
+                  );
+                }
+              },
+              icon: const Icon(Icons.image),
+            ),
           ],
         )
       ],
@@ -46,15 +77,17 @@ class ChatMessageListWidget extends HookConsumerWidget {
 }
 
 class ChatMessageList extends HookConsumerWidget {
+  final ScrollController listController;
   const ChatMessageList({
     super.key,
+    required this.listController,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(activeSessionMessagesProvider);
     final uiState = ref.watch(chatUiProvider);
-    final listController = useScrollController();
+
     ref.listen(activeSessionMessagesProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {
         listController.jumpTo(
@@ -200,24 +233,22 @@ class MessageContentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     codeWrapper(child, text) => CodeWrapperWidget(child: child, text: text);
-    return SelectionArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...MarkdownGenerator(
-            config: MarkdownConfig().copy(configs: [
-              const PreConfig().copy(wrapper: codeWrapper),
-            ]),
-            generators: [
-              latexGenerator,
-            ],
-            inlineSyntaxes: [
-              LatexSyntax(),
-            ],
-          ).buildWidgets(message.content),
-          if (typing) const TypingCursor(),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ...MarkdownGenerator(
+          config: MarkdownConfig().copy(configs: [
+            const PreConfig().copy(wrapper: codeWrapper),
+          ]),
+          generators: [
+            latexGenerator,
+          ],
+          inlineSyntaxes: [
+            LatexSyntax(),
+          ],
+        ).buildWidgets(message.content),
+        if (typing) const TypingCursor(),
+      ],
     );
   }
 }
