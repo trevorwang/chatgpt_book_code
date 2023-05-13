@@ -1,6 +1,8 @@
 import 'package:chatgpt/injection.dart';
 import 'package:chatgpt/states/session_state.dart';
 import 'package:chatgpt/tools/error.dart';
+import 'package:chatgpt/tools/files.dart';
+import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +14,7 @@ import '../markdown/latex.dart';
 import '../models/message.dart';
 import '../states/message_state.dart';
 import '../states/chat_ui_state.dart';
+import '../utils.dart';
 import 'typing_cursor.dart';
 
 class ChatMessageListWidget extends HookConsumerWidget {
@@ -37,8 +40,18 @@ class ChatMessageListWidget extends HookConsumerWidget {
             IconButton(
               onPressed: () {
                 if (active != null) {
-                  handleError(
-                      context, () => exportService.exportMarkdown(active));
+                  handleError(context, () async {
+                    if (isDesktop()) {
+                      final path = await saveAs(fileName: "${active.title}.md");
+                      if (path == null) return; //取消选择
+                      exportService.exportMarkdown(
+                        active,
+                        path: path,
+                      );
+                    } else {
+                      exportService.exportMarkdown(active);
+                    }
+                  });
                 }
               },
               icon: const Icon(Icons.text_snippet),
@@ -57,14 +70,27 @@ class ChatMessageListWidget extends HookConsumerWidget {
                   // Future.delayed(const Duration(milliseconds: 500));
                   final height = scrollController.position.maxScrollExtent +
                       scrollController.position.viewportDimension;
-                  handleError(
-                    context,
-                    () => exportService.exportImage(
-                      active,
-                      context: ref.context,
-                      targetSize: Size(renderbox.size.width + 32, height + 48),
-                    ),
-                  );
+                  handleError(context, () async {
+                    if (isDesktop()) {
+                      final path =
+                          await saveAs(fileName: "${active.title}.png");
+                      if (path == null) return;
+                      exportService.exportImage(
+                        active,
+                        context: ref.context,
+                        targetSize:
+                            Size(renderbox.size.width + 32, height + 48),
+                        path: path,
+                      );
+                    } else {
+                      exportService.exportImage(
+                        active,
+                        context: ref.context,
+                        targetSize:
+                            Size(renderbox.size.width + 32, height + 48),
+                      );
+                    }
+                  });
                 }
               },
               icon: const Icon(Icons.image),

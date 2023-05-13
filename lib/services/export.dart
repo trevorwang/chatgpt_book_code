@@ -9,9 +9,9 @@ import '../models/session.dart';
 import '../widgets/chat_message_list.dart';
 
 class ExportService {
-  void exportMarkdown(
+  Future<String?> exportMarkdown(
     Session session, {
-    String? fileName,
+    String? path,
   }) async {
     final messages = await db.messageDao.findMessagesBySessionId(session.id!);
     final buffer = StringBuffer();
@@ -27,14 +27,16 @@ class ExportService {
     final docDir = await getApplicationDocumentsDirectory();
     final dir = Directory("${docDir.path}/exports/markdown");
     await dir.create(recursive: true);
-    final file = File("${dir.path}/${fileName ?? session.id}.md");
+    final file = File(path ?? "${dir.path}/${session.id}.md");
     await file.writeAsString(buffer.toString());
+    return file.path;
   }
 
-  void exportImage(
+  Future<String?> exportImage(
     Session session, {
     BuildContext? context,
     Size? targetSize,
+    String? path,
   }) async {
     final controller = ScreenshotController();
     final messages = await db.messageDao.findMessagesBySessionId(session.id!);
@@ -76,7 +78,9 @@ class ExportService {
     final docDir = await getApplicationDocumentsDirectory();
     final dir = Directory("${docDir.path}/exports/img");
     await dir.create(recursive: true);
-    final file = File("${dir.path}/${session.id}.png");
+    final fileToSave = "${dir.path}/${session.id}.png";
+    final file = File(path ?? fileToSave);
     file.writeAsBytes(img);
+    return file.path;
   }
 }
