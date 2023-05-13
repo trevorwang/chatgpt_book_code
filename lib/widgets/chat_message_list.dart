@@ -2,6 +2,7 @@ import 'package:chatgpt/injection.dart';
 import 'package:chatgpt/states/session_state.dart';
 import 'package:chatgpt/tools/error.dart';
 import 'package:chatgpt/tools/files.dart';
+import 'package:chatgpt/tools/share.dart';
 import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -49,7 +50,9 @@ class ChatMessageListWidget extends HookConsumerWidget {
                         path: path,
                       );
                     } else {
-                      exportService.exportMarkdown(active);
+                      final output = await exportService.exportMarkdown(active);
+                      if (output == null) return;
+                      shareFiles([output]);
                     }
                   });
                 }
@@ -83,12 +86,14 @@ class ChatMessageListWidget extends HookConsumerWidget {
                         path: path,
                       );
                     } else {
-                      exportService.exportImage(
+                      final output = await exportService.exportImage(
                         active,
                         context: ref.context,
                         targetSize:
                             Size(renderbox.size.width + 32, height + 48),
                       );
+                      if (output == null) return;
+                      shareFiles([output]);
                     }
                   });
                 }
