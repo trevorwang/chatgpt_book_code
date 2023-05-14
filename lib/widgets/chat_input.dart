@@ -26,7 +26,6 @@ class ChatInputWidget extends HookConsumerWidget {
             },
             icon: Icon(
               voiceMode.value ? Icons.keyboard : Icons.keyboard_voice,
-              color: Theme.of(context).primaryColor,
             ),
           ),
           Expanded(

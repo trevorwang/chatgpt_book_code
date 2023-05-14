@@ -10,6 +10,8 @@ PODS:
     - FlutterMacOS
   - record_macos (0.2.0):
     - FlutterMacOS
+  - share_plus (0.0.1):
+    - FlutterMacOS
   - sqflite (0.0.2):
     - FlutterMacOS
     - FMDB (>= 2.7.5)
@@ -21,6 +23,7 @@ DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/macos`)
   - record_macos (from `Flutter/ephemeral/.symlinks/plugins/record_macos/macos`)
+  - share_plus (from `Flutter/ephemeral/.symlinks/plugins/share_plus/macos`)
   - sqflite (from `Flutter/ephemeral/.symlinks/plugins/sqflite/macos`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
 
@@ -37,6 +40,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/macos
   record_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/record_macos/macos
+  share_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/share_plus/macos
   sqflite:
     :path: Flutter/ephemeral/.symlinks/plugins/sqflite/macos
   url_launcher_macos:
@@ -48,6 +53,7 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   record_macos: 937889e0f2a7a12b6fc14e97a3678e5a18943de6
+  share_plus: 76dd39142738f7a68dd57b05093b5e8193f220f7
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
   url_launcher_macos: 5335912b679c073563f29d89d33d10d459f95451
 

@@ -15,7 +15,7 @@ import '../markdown/latex.dart';
 import '../models/message.dart';
 import '../states/message_state.dart';
 import '../states/chat_ui_state.dart';
-import '../utils.dart';
+import '../theme.dart';
 import 'typing_cursor.dart';
 
 class ChatMessageListWidget extends HookConsumerWidget {
@@ -133,9 +133,15 @@ class ChatMessageList extends HookConsumerWidget {
         return msg.isUser
             ? SentMessageItem(
                 message: msg,
-                backgroundColor: const Color(0xFF8FE869),
+                // backgroundColor: const Color(0xFF8FE869), //TODO
+                backgroundColor: isDarkMode(context)
+                    ? const Color(0xFF28B561)
+                    : const Color(0xFF8FE869),
               )
             : ReceivedMessageItem(
+                backgroundColor: isDarkMode(context) // TODO
+                    ? Colors.black
+                    : Colors.black.withOpacity(.05),
                 message: msg,
                 typing: index == messages.length - 1 && uiState.requestLoading,
               );
@@ -264,12 +270,17 @@ class MessageContentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     codeWrapper(child, text) => CodeWrapperWidget(child: child, text: text);
+
+    final config = isDarkMode(context)
+        ? MarkdownConfig.darkConfig
+        : MarkdownConfig.defaultConfig;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ...MarkdownGenerator(
-          config: MarkdownConfig().copy(configs: [
-            const PreConfig().copy(wrapper: codeWrapper),
+          config: config.copy(configs: [
+            config.pre.copy(wrapper: codeWrapper),
           ]),
           generators: [
             latexGenerator,

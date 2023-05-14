@@ -9,11 +9,11 @@ class DesktopWindow extends StatelessWidget {
   });
 
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context) {
     return WindowBorder(
       color: Colors.grey,
       child: Container(
-        color: const Color(0xFFF6F6F6),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Stack(
           children: [
             child,

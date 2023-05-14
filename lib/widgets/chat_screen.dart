@@ -13,7 +13,6 @@ class ChatScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activeSession = ref.watch(activeSessionProvider);
     return Container(
-      color: const Color(0xFFF1F1F1),
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [

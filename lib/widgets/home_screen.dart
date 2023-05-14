@@ -128,8 +128,10 @@ class NewChatButton extends HookConsumerWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            iconColor: MaterialStateProperty.all(Colors.black),
-            foregroundColor: MaterialStateProperty.all(Colors.black),
+            iconColor: MaterialStateProperty.all(
+                Theme.of(context).textTheme.titleMedium?.color),
+            foregroundColor: MaterialStateProperty.all(
+                Theme.of(context).textTheme.titleMedium?.color),
           ),
           onPressed: () {
             ref
