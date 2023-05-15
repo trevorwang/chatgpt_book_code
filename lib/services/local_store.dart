@@ -9,6 +9,6 @@ class LocalStoreService {
   }
 
   Future<void> setItem(String key, dynamic value) async {
-    await localStorage.setItem(key, value);
+    return await localStorage.setItem(key, value);
   }
 }

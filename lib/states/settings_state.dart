@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../injection.dart';
+import '../predefined.dart';
 
 part 'settings_state.freezed.dart';
 part 'settings_state.g.dart';
@@ -12,6 +13,7 @@ abstract class Settings with _$Settings {
     String? apiKey,
     String? httpProxy,
     String? baseUrl,
+    @Default(AppTheme.auto) AppTheme appTheme,
   }) = _Settings;
 
   static Future<Settings> load() async {
@@ -19,11 +21,13 @@ abstract class Settings with _$Settings {
     final baseUrl = await localStorage.getItem<String>(SettingKey.baseUrl.name);
     final httpProxy =
         await localStorage.getItem<String>(SettingKey.httpProxy.name);
-
+    final appTheme = await localStorage.getItem(SettingKey.appTheme.name) ??
+        AppTheme.auto.index;
     return Settings(
       apiKey: apiKey,
       baseUrl: baseUrl,
       httpProxy: httpProxy,
+      appTheme: AppTheme.values[appTheme],
     );
   }
 }
@@ -64,12 +68,23 @@ class SettingState extends _$SettingState {
       return settings.copyWith(httpProxy: httpProxy);
     });
   }
+
+  Future<void> setAppTheme(AppTheme theme) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await localStorage.setItem(SettingKey.appTheme.name, theme.index);
+      final settings = state.valueOrNull ?? const Settings();
+      chatgpt.loadConfig();
+      return settings.copyWith(appTheme: theme);
+    });
+  }
 }
 
 enum SettingKey {
   apiKey,
   httpProxy,
   baseUrl,
+  appTheme,
 }
 
 @freezed
@@ -78,6 +93,7 @@ class SettingItem with _$SettingItem {
     required SettingKey key,
     required String title,
     String? subtitle,
+    dynamic value,
     @Default(false) bool multiline,
     required String hint,
   }) = _SettingItem;
@@ -104,5 +120,11 @@ List<SettingItem> settingList(SettingListRef ref) {
         title: "Reverse proxy URL",
         subtitle: settings?.baseUrl,
         hint: "https://openai.proxy.dev/v1"),
+    SettingItem(
+      key: SettingKey.appTheme,
+      title: "App Theme",
+      hint: "app theme",
+      value: settings?.appTheme,
+    ),
   ];
 }
