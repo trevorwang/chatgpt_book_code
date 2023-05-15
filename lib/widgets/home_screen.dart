@@ -122,6 +122,11 @@ class NewChatButton extends HookConsumerWidget {
         height: 40,
         child: OutlinedButton.icon(
           style: ButtonStyle(
+            textStyle: MaterialStateProperty.all(
+              Theme.of(context).textTheme.titleMedium,
+            ),
+            iconSize:
+                MaterialStateProperty.all(Theme.of(context).iconTheme.size),
             alignment: Alignment.centerLeft,
             shape: MaterialStateProperty.all(
               RoundedRectangleBorder(
@@ -140,7 +145,6 @@ class NewChatButton extends HookConsumerWidget {
           },
           icon: const Icon(
             Icons.add,
-            size: 16,
           ),
           label: const Text("New chat"),
         ),
