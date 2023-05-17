@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 import '../intl.dart';
 import '../predefined.dart';
@@ -33,6 +34,8 @@ class SettingsWindow extends HookConsumerWidget {
         SettingItemOpenAiBase(),
         Divider(),
         SettingItemAppTheme(),
+        Divider(),
+        SettingItemLanguage(),
       ],
     );
   }
@@ -158,6 +161,35 @@ class SettingItemAppTheme extends HookConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SettingItemLanguage extends HookConsumerWidget {
+  const SettingItemLanguage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(settingStateProvider).valueOrNull?.locale;
+    return ListTile(
+      title: Text(AppIntl.of(context).settingsLanguageLabel),
+      subtitle: Row(
+          children: [
+        Tuple2<Locale?, String>(null, AppIntl.of(context).lanSystem),
+        Tuple2<Locale?, String>(const Locale("en"), AppIntl.of(context).lanEn),
+        Tuple2<Locale?, String>(const Locale("zh"), AppIntl.of(context).lanZh),
+      ]
+              .map((e) => RadioMenuButton(
+                    value: e.item1,
+                    groupValue: locale,
+                    onChanged: (v) {
+                      ref.read(settingStateProvider.notifier).setLocale(v);
+                    },
+                    child: Text(e.item2),
+                  ))
+              .toList()),
     );
   }
 }

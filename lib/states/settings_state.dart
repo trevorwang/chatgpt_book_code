@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,6 +15,7 @@ abstract class Settings with _$Settings {
     String? httpProxy,
     String? baseUrl,
     @Default(AppTheme.auto) AppTheme appTheme,
+    Locale? locale,
   }) = _Settings;
 
   static Future<Settings> load() async {
@@ -23,11 +25,13 @@ abstract class Settings with _$Settings {
         await localStorage.getItem<String>(SettingKey.httpProxy.name);
     final appTheme = await localStorage.getItem(SettingKey.appTheme.name) ??
         AppTheme.auto.index;
+    final locale = await localStorage.getItem<String?>(SettingKey.locale.name);
     return Settings(
       apiKey: apiKey,
       baseUrl: baseUrl,
       httpProxy: httpProxy,
       appTheme: AppTheme.values[appTheme],
+      locale: locale == null ? null : Locale(locale),
     );
   }
 }
@@ -78,6 +82,16 @@ class SettingState extends _$SettingState {
       return settings.copyWith(appTheme: theme);
     });
   }
+
+  Future<void> setLocale(Locale? locale) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await localStorage.setItem(SettingKey.locale.name, locale?.languageCode);
+      final settings = state.valueOrNull ?? const Settings();
+      chatgpt.loadConfig();
+      return settings.copyWith(locale: locale);
+    });
+  }
 }
 
 enum SettingKey {
@@ -85,4 +99,5 @@ enum SettingKey {
   httpProxy,
   baseUrl,
   appTheme,
+  locale,
 }
