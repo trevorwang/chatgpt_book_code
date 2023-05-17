@@ -1,0 +1,21 @@
+{
+  "cancel": "取消",
+  "chatHistoryTitle": "记录",
+  "chatScreenTitle": "聊天",
+  "delete": "删除",
+  "deleteConfirm": "你确定要删除么？",
+  "errorLabel": "错误",
+  "holdingToSpeakLabel": "按住说话",
+  "loading": "加载中...",
+  "modelSelectTitle": "模型：",
+  "newChatTitle": "新聊天",
+  "ok": "确定",
+  "recording": "录音中...",
+  "settingThemeLabel": "主题",
+  "settingsTitle": "设置",
+  "themeDark": "暗黑",
+  "themeLight": "明亮",
+  "themeSystem": "跟随系统",
+  "transcriptingLabel": "识别中...",
+  "unkonwSettingLabel": "未设置"
+}

@@ -1,3 +1,4 @@
+import 'package:chatgpt/intl.dart';
 import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,7 +13,9 @@ class ChatHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("History")),
+      appBar: AppBar(
+        title: Text(AppIntl.of(context).chatHistoryTitle),
+      ),
       body: const ChatHistoryWindow(),
     );
   }
@@ -129,14 +132,14 @@ Future _deleteConfirm(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Delete"),
-          content: const Text("Are you sure to delete?"),
+          title: Text(AppIntl.of(context).delete),
+          content: Text(AppIntl.of(context).deleteConfirm),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("Cancel"),
+              child: Text(AppIntl.of(context).cancel),
             ),
             TextButton(
               onPressed: () {
@@ -148,7 +151,7 @@ Future _deleteConfirm(
                     .setActiveSession(null);
                 Navigator.of(context).pop();
               },
-              child: const Text("Delete"),
+              child: Text(AppIntl.of(context).delete),
             ),
           ],
         );

@@ -1,3 +1,4 @@
+import 'package:chatgpt/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -52,8 +53,9 @@ class AudioInputWidget extends HookConsumerWidget {
       child: transcripting.value || uiState.requestLoading
           ? ElevatedButton(
               onPressed: null,
-              child:
-                  Text(transcripting.value ? "Transcripting..." : "Loading..."))
+              child: Text(transcripting.value
+                  ? AppIntl.of(context).transcriptingLabel
+                  : AppIntl.of(context).loading))
           : GestureDetector(
               onLongPressStart: (details) {
                 recording.value = true;
@@ -79,7 +81,9 @@ class AudioInputWidget extends HookConsumerWidget {
               },
               child: ElevatedButton(
                 onPressed: () {},
-                child: Text(recording.value ? "Recording..." : "Hold to speak"),
+                child: Text(recording.value
+                    ? AppIntl.of(context).recording
+                    : AppIntl.of(context).holdingToSpeakLabel),
               ),
             ),
     );

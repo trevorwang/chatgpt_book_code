@@ -1,4 +1,3 @@
-import 'package:chatgpt/widgets/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -7,6 +6,8 @@ import '../states/session_state.dart';
 import 'chat_history.dart';
 import 'chat_screen.dart';
 import 'desktop.dart';
+import '../intl.dart';
+import 'settings_screen.dart';
 
 class DesktopHomeScreen extends StatelessWidget {
   const DesktopHomeScreen({super.key});
@@ -32,14 +33,15 @@ class DesktopHomeScreen extends StatelessWidget {
                     const Divider(),
                     ListTile(
                       leading: const Icon(Icons.settings),
-                      title: const Text("Settings"),
+                      title: Text(AppIntl.of(context).settingsTitle),
                       onTap: () {
                         showDialog(
                             context: context,
                             builder: (context) {
-                              return const AlertDialog(
-                                  title: Text("Settings"),
-                                  content: SizedBox(
+                              return AlertDialog(
+                                  title:
+                                      Text(AppIntl.of(context).settingsTitle),
+                                  content: const SizedBox(
                                     height: 400,
                                     width: 400,
                                     child: SettingsWindow(),
@@ -64,7 +66,7 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Text(AppIntl.of(context).chatScreenTitle),
         actions: [
           IconButton(
             onPressed: () {
@@ -83,9 +85,9 @@ class HomeScreen extends HookConsumerWidget {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-              child: const Text(
-                "Chat History",
-                style: TextStyle(color: Colors.white, fontSize: 22),
+              child: Text(
+                AppIntl.of(context).chatHistoryTitle,
+                style: const TextStyle(color: Colors.white, fontSize: 22),
               ),
             ),
             Expanded(
@@ -97,7 +99,7 @@ class HomeScreen extends HookConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text("Settings"),
+              title: Text(AppIntl.of(context).settingsTitle),
               onTap: () {
                 Navigator.of(context).pop();
                 GoRouter.of(context).push('/settings');
@@ -146,7 +148,7 @@ class NewChatButton extends HookConsumerWidget {
           icon: const Icon(
             Icons.add,
           ),
-          label: const Text("New chat"),
+          label: Text(AppIntl.of(context).newChatTitle),
         ),
       ),
     );

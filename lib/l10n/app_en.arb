@@ -1,0 +1,21 @@
+{
+  "cancel": "Cancel",
+  "chatHistoryTitle": "Chat History",
+  "chatScreenTitle": "Chat",
+  "delete": "Delete",
+  "deleteConfirm": "Are you sure to delete?",
+  "errorLabel": "Error",
+  "holdingToSpeakLabel": "Holding to speak",
+  "loading": "Loading...",
+  "modelSelectTitle": "Model: ",
+  "newChatTitle": "New Chat",
+  "ok": "OK",
+  "recording": "recording...",
+  "settingThemeLabel": "App theme",
+  "settingsTitle": "Settings",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "transcriptingLabel": "Transcripting...",
+  "unkonwSettingLabel": "Unknown"
+}

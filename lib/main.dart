@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'injection.dart';
 import 'router.dart';
 import 'states/settings_state.dart';
@@ -24,8 +24,10 @@ class MyApp extends HookConsumerWidget {
     final settings = ref.watch(settingStateProvider).valueOrNull?.appTheme;
     final theme = getThemeData(settings);
     return MaterialApp.router(
+      locale: const Locale("zh"),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       debugShowCheckedModeBanner: false,
-      title: 'ChatGPT',
       theme: theme.item1,
       darkTheme: theme.item2,
       routerConfig: router,
