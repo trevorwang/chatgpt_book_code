@@ -36,9 +36,10 @@ void handleError(
     await fn();
   } on OpenaiException catch (e) {
     logger.e("err: $e", e);
+    final msg = errorMessageFromCode(context, e.code);
     showErrorDialog(
       context,
-      message: e.error.message,
+      message: msg ?? e.error.message,
     );
   } on HandshakeException catch (err) {
     showErrorDialog(
@@ -61,4 +62,13 @@ void handleError(
   } finally {
     finallyFn?.call();
   }
+}
+
+String? errorMessageFromCode(BuildContext context, int code) {
+  switch (code) {
+    case 401:
+      return AppIntl.of(context).errorMassgeInvalidApiKey;
+    default:
+  }
+  return null;
 }

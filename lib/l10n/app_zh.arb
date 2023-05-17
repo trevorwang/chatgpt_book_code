@@ -5,6 +5,7 @@
   "delete": "删除",
   "deleteConfirm": "你确定要删除么？",
   "errorLabel": "错误",
+  "errorMassgeInvalidApiKey": "你输入的API Key 不正确。",
   "errorMessageNetworkError": "网络异常，请检查网络是否正常。",
   "holdingToSpeakLabel": "按住说话",
   "loading": "加载中...",

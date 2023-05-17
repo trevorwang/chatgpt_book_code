@@ -5,6 +5,7 @@
   "delete": "Delete",
   "deleteConfirm": "Are you sure to delete?",
   "errorLabel": "Error",
+  "errorMassgeInvalidApiKey": "Your API key is not valid.",
   "errorMessageNetworkError": "Network error, please check your network connectivity.",
   "holdingToSpeakLabel": "Holding to speak",
   "loading": "Loading...",
