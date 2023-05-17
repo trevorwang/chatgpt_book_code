@@ -104,7 +104,7 @@ class TextInputWidget extends HookConsumerWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        hintText: 'Type a message...', // 显示在输入框内的提示文字
+        hintText: AppIntl.of(context).chatInputHint, // 显示在输入框内的提示文字
         suffixIcon: SizedBox(
           width: 40,
           child: uiState.requestLoading

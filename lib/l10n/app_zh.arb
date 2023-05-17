@@ -1,6 +1,7 @@
 {
   "cancel": "取消",
   "chatHistoryTitle": "记录",
+  "chatInputHint": "输入消息…",
   "chatScreenTitle": "聊天",
   "delete": "删除",
   "deleteConfirm": "你确定要删除么？",

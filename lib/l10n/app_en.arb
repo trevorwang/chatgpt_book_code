@@ -1,6 +1,7 @@
 {
   "cancel": "Cancel",
   "chatHistoryTitle": "Chat History",
+  "chatInputHint": "Type a message...",
   "chatScreenTitle": "Chat",
   "delete": "Delete",
   "deleteConfirm": "Are you sure to delete?",
