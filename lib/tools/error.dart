@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:chatgpt/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:quickalert/quickalert.dart';
@@ -16,9 +18,10 @@ void showErrorDialog(
   await QuickAlert.show(
     context: context,
     type: type,
-    title: title,
+    title: title ?? AppIntl.of(context).errorLabel,
     text: message,
     widget: child,
+    confirmBtnText: AppIntl.of(context).ok,
   );
 }
 
@@ -35,15 +38,23 @@ void handleError(
     logger.e("err: $e", e);
     showErrorDialog(
       context,
-      type: DialogType.error,
-      title: "Error",
       message: e.error.message,
     );
+  } on HandshakeException catch (err) {
+    showErrorDialog(
+      context,
+      message: AppIntl.of(context).errorMessageNetworkError,
+    );
+    logger.e("err: $err", err);
+  } on SocketException catch (err) {
+    showErrorDialog(
+      context,
+      message: AppIntl.of(context).errorMessageNetworkError,
+    );
+    logger.e("err: $err", err);
   } catch (err) {
     showErrorDialog(
       context,
-      type: DialogType.error,
-      title: "Error",
       message: err.toString(),
     );
     logger.e("err: $err", err);
