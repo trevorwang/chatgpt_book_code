@@ -3,7 +3,7 @@ import 'package:tuple/tuple.dart';
 
 import 'predefined.dart';
 
-final dartThemeData = ThemeData.dark();
+final darkThemeData = ThemeData.dark();
 
 final lightThemeData = ThemeData();
 
@@ -16,8 +16,8 @@ Tuple2<ThemeData?, ThemeData?> getThemeData(AppTheme? theme) {
   if (theme == AppTheme.light) {
     return Tuple2(lightThemeData, null);
   } else if (theme == AppTheme.dark) {
-    return Tuple2(dartThemeData, null);
+    return Tuple2(darkThemeData, null);
   } else {
-    return Tuple2(lightThemeData, dartThemeData);
+    return Tuple2(lightThemeData, darkThemeData);
   }
 }
