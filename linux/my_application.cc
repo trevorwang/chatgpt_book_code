@@ -57,8 +57,6 @@ static void my_application_activate(GApplication *application)
 
   auto bdw = bitsdojo_window_from(window); // <--- add this line
   bdw->setCustomFrame(true);               // <-- add this line
-  auto bdw = bitsdojo_window_from(window);
-  bdw->setCustomFrame(true);
   gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
