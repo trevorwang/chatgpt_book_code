@@ -8,8 +8,9 @@ final lightThemeData = ThemeData(
   fontFamilyFallback: fontsFallback,
 );
 
-final darkThemeData = lightThemeData.copyWith(
+final darkThemeData = ThemeData(
   brightness: Brightness.dark,
+  fontFamilyFallback: fontsFallback,
 );
 
 bool isDarkMode(BuildContext context) {
