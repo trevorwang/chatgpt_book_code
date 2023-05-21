@@ -1,4 +1,3 @@
-import 'package:chatgpt/predefined.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -24,8 +23,8 @@ class SettingsWindow extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(settingListProvider);
-    final apptheme =
-        ref.watch(settingStateProvider).valueOrNull?.appTheme ?? AppTheme.auto;
+    final apptheme = ref.watch(settingStateProvider).valueOrNull?.appTheme ??
+        ThemeMode.system;
     final controller = useTextEditingController();
 
     return ListView.separated(
@@ -38,32 +37,32 @@ class SettingsWindow extends HookConsumerWidget {
             subtitle: Row(
               children: [
                 RadioMenuButton(
-                  value: AppTheme.auto,
+                  value: ThemeMode.system,
                   groupValue: apptheme,
                   onChanged: (v) {
                     ref
                         .read(settingStateProvider.notifier)
-                        .setAppTheme(AppTheme.auto);
+                        .setThemeMode(ThemeMode.system);
                   },
                   child: const Text('System'),
                 ),
                 RadioMenuButton(
-                  value: AppTheme.light,
+                  value: ThemeMode.light,
                   groupValue: apptheme,
                   onChanged: (v) {
                     ref
                         .read(settingStateProvider.notifier)
-                        .setAppTheme(AppTheme.light);
+                        .setThemeMode(ThemeMode.light);
                   },
                   child: const Text('Light'),
                 ),
                 RadioMenuButton(
-                  value: AppTheme.dark,
+                  value: ThemeMode.dark,
                   groupValue: apptheme,
                   onChanged: (v) {
                     ref
                         .read(settingStateProvider.notifier)
-                        .setAppTheme(AppTheme.dark);
+                        .setThemeMode(ThemeMode.dark);
                   },
                   child: const Text('Dark'),
                 ),

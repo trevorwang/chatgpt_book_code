@@ -22,12 +22,12 @@ class MyApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingStateProvider).valueOrNull?.appTheme;
-    final theme = getThemeData(settings);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'ChatGPT',
-      theme: theme.item1,
-      darkTheme: theme.item2,
+      theme: lightThemeData,
+      darkTheme: darkThemeData,
+      themeMode: settings,
       routerConfig: router,
     );
   }
