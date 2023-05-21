@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tuple/tuple.dart';
 
 import '../intl.dart';
-import '../predefined.dart';
 import '../states/settings_state.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -123,39 +122,39 @@ class SettingItemAppTheme extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final apptheme =
-        ref.watch(settingStateProvider).valueOrNull?.appTheme ?? AppTheme.auto;
+    final apptheme = ref.watch(settingStateProvider).valueOrNull?.appTheme ??
+        ThemeMode.system;
     return ListTile(
       title: Text(AppIntl.of(context).settingThemeLabel),
       subtitle: Row(
         children: [
           RadioMenuButton(
-            value: AppTheme.auto,
+            value: ThemeMode.system,
             groupValue: apptheme,
             onChanged: (v) {
               ref
                   .read(settingStateProvider.notifier)
-                  .setAppTheme(AppTheme.auto);
+                  .setAppTheme(ThemeMode.system);
             },
             child: Text(AppIntl.of(context).themeSystem),
           ),
           RadioMenuButton(
-            value: AppTheme.light,
+            value: ThemeMode.light,
             groupValue: apptheme,
             onChanged: (v) {
               ref
                   .read(settingStateProvider.notifier)
-                  .setAppTheme(AppTheme.light);
+                  .setAppTheme(ThemeMode.light);
             },
             child: Text(AppIntl.of(context).themeLight),
           ),
           RadioMenuButton(
-            value: AppTheme.dark,
+            value: ThemeMode.dark,
             groupValue: apptheme,
             onChanged: (v) {
               ref
                   .read(settingStateProvider.notifier)
-                  .setAppTheme(AppTheme.dark);
+                  .setAppTheme(ThemeMode.dark);
             },
             child: Text(AppIntl.of(context).themeDark),
           ),

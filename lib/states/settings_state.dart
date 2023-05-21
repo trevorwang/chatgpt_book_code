@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../injection.dart';
-import '../predefined.dart';
 
 part 'settings_state.freezed.dart';
 part 'settings_state.g.dart';
@@ -14,7 +13,7 @@ abstract class Settings with _$Settings {
     String? apiKey,
     String? httpProxy,
     String? baseUrl,
-    @Default(AppTheme.auto) AppTheme appTheme,
+    @Default(ThemeMode.system) ThemeMode appTheme,
     Locale? locale,
   }) = _Settings;
 
@@ -24,13 +23,13 @@ abstract class Settings with _$Settings {
     final httpProxy =
         await localStorage.getItem<String>(SettingKey.httpProxy.name);
     final appTheme = await localStorage.getItem(SettingKey.appTheme.name) ??
-        AppTheme.auto.index;
+        ThemeMode.system.index;
     final locale = await localStorage.getItem<String?>(SettingKey.locale.name);
     return Settings(
       apiKey: apiKey,
       baseUrl: baseUrl,
       httpProxy: httpProxy,
-      appTheme: AppTheme.values[appTheme],
+      appTheme: ThemeMode.values[appTheme],
       locale: locale == null ? null : Locale(locale),
     );
   }
@@ -73,7 +72,7 @@ class SettingState extends _$SettingState {
     });
   }
 
-  Future<void> setAppTheme(AppTheme theme) async {
+  Future<void> setAppTheme(ThemeMode theme) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await localStorage.setItem(SettingKey.appTheme.name, theme.index);

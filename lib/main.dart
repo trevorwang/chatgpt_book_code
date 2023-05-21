@@ -22,14 +22,14 @@ class MyApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingStateProvider).valueOrNull;
-    final theme = getThemeData(settings?.appTheme);
     return MaterialApp.router(
       locale: settings?.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       debugShowCheckedModeBanner: false,
-      theme: theme.item1,
-      darkTheme: theme.item2,
+      theme: lightThemeData,
+      darkTheme: darkThemeData,
+      themeMode: settings?.appTheme,
       routerConfig: router,
     );
   }
