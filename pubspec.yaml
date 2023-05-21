@@ -63,6 +63,7 @@ dependencies:
   intl: any
   flutter_localizations:
     sdk: flutter
+  tuple: ^2.0.1
 
 dev_dependencies:
   flutter_test:
