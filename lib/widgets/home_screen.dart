@@ -2,6 +2,7 @@ import 'package:chatgpt/widgets/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../states/session_state.dart';
 import 'chat_history.dart';
@@ -32,7 +33,7 @@ class DesktopHomeScreen extends StatelessWidget {
                     const Divider(),
                     ListTile(
                       leading: const Icon(Icons.settings),
-                      title: const Text("Settings"),
+                      title: Text(AppLocalizations.of(context)!.settingsTitle),
                       onTap: () {
                         showDialog(
                             context: context,
