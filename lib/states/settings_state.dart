@@ -14,6 +14,7 @@ abstract class Settings with _$Settings {
     String? httpProxy,
     String? baseUrl,
     @Default(ThemeMode.system) ThemeMode appTheme,
+    Locale? locale,
   }) = _Settings;
 
   static Future<Settings> load() async {
@@ -23,11 +24,13 @@ abstract class Settings with _$Settings {
         await localStorage.getItem<String>(SettingKey.httpProxy.name);
     final appTheme = await localStorage.getItem(SettingKey.appTheme.name) ??
         ThemeMode.system.index;
+    final lan = await localStorage.getItem<String?>(SettingKey.locale.name);
     return Settings(
       apiKey: apiKey,
       baseUrl: baseUrl,
       httpProxy: httpProxy,
       appTheme: ThemeMode.values[appTheme],
+      locale: lan == null ? null : Locale(lan),
     );
   }
 }
@@ -78,6 +81,16 @@ class SettingState extends _$SettingState {
       return settings.copyWith(appTheme: theme);
     });
   }
+
+  Future<void> setLocale(Locale? locale) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await localStorage.setItem(SettingKey.locale.name, locale?.languageCode);
+      final settings = state.valueOrNull ?? const Settings();
+      chatgpt.loadConfig();
+      return settings.copyWith(locale: locale);
+    });
+  }
 }
 
 enum SettingKey {
@@ -85,6 +98,7 @@ enum SettingKey {
   httpProxy,
   baseUrl,
   appTheme,
+  locale,
 }
 
 @freezed
@@ -125,6 +139,12 @@ List<SettingItem> settingList(SettingListRef ref) {
       title: "App Theme",
       hint: "app theme",
       value: settings?.appTheme,
+    ),
+    SettingItem(
+      key: SettingKey.locale,
+      title: "Language",
+      hint: "app language",
+      value: settings?.locale,
     ),
   ];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../states/settings_state.dart';
 
@@ -23,15 +24,47 @@ class SettingsWindow extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(settingListProvider);
-    final apptheme = ref.watch(settingStateProvider).valueOrNull?.appTheme ??
-        ThemeMode.system;
+    final settings = ref.watch(settingStateProvider).valueOrNull;
+    final apptheme = settings?.appTheme ?? ThemeMode.system;
     final controller = useTextEditingController();
 
     return ListView.separated(
       itemBuilder: (context, index) {
         final item = items[index];
-
-        if (index == 3) {
+        if (SettingKey.locale == item.key) {
+          return ListTile(
+            title: Text(item.title),
+            subtitle: Row(
+              children: [
+                RadioMenuButton(
+                  value: null,
+                  groupValue: settings?.locale,
+                  onChanged: (v) {
+                    ref.read(settingStateProvider.notifier).setLocale(v);
+                  },
+                  child:
+                      Text(AppLocalizations.of(context)!.settingsLabelSystem),
+                ),
+                RadioMenuButton(
+                  value: const Locale('en'),
+                  groupValue: settings?.locale,
+                  onChanged: (v) {
+                    ref.read(settingStateProvider.notifier).setLocale(v);
+                  },
+                  child: const Text('English'),
+                ),
+                RadioMenuButton(
+                  value: const Locale('zh'),
+                  groupValue: settings?.locale,
+                  onChanged: (v) {
+                    ref.read(settingStateProvider.notifier).setLocale(v);
+                  },
+                  child: const Text('中文'),
+                ),
+              ],
+            ),
+          );
+        } else if (index == 3) {
           return ListTile(
             title: Text(item.title),
             subtitle: Row(

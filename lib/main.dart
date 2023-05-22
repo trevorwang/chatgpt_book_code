@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'injection.dart';
@@ -23,16 +22,16 @@ class MyApp extends HookConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingStateProvider).valueOrNull?.appTheme;
+    final settings = ref.watch(settingStateProvider).valueOrNull;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'ChatGPT',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('zh'),
+      locale: settings?.locale,
       theme: lightThemeData,
       darkTheme: darkThemeData,
-      themeMode: settings,
+      themeMode: settings?.appTheme,
       routerConfig: router,
     );
   }
