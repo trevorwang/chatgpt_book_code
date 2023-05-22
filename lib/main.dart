@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'injection.dart';
 import 'router.dart';
@@ -25,6 +26,16 @@ class MyApp extends HookConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'ChatGPT',
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('zh'),
+      ],
+      locale: const Locale('zh'),
       theme: lightThemeData,
       darkTheme: darkThemeData,
       themeMode: settings,
