@@ -75,7 +75,11 @@ class SettingItemApiKey extends HookConsumerWidget {
     final controller = useTextEditingController();
     return ListTile(
       title: Text(title),
-      subtitle: Text(settings?.apiKey ?? ""),
+      subtitle: Text(
+        settings?.apiKey ?? "",
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       onTap: () async {
         final text = await showEditor(
           controller,
