@@ -24,13 +24,13 @@ abstract class Settings with _$Settings {
         await localStorage.getItem<String>(SettingKey.httpProxy.name);
     final appTheme = await localStorage.getItem(SettingKey.appTheme.name) ??
         ThemeMode.system.index;
-    final lan = await localStorage.getItem<String?>(SettingKey.locale.name);
+    final locale = await localStorage.getItem<String?>(SettingKey.locale.name);
     return Settings(
       apiKey: apiKey,
       baseUrl: baseUrl,
       httpProxy: httpProxy,
       appTheme: ThemeMode.values[appTheme],
-      locale: lan == null ? null : Locale(lan),
+      locale: locale == null ? null : Locale(locale),
     );
   }
 }
@@ -72,7 +72,7 @@ class SettingState extends _$SettingState {
     });
   }
 
-  Future<void> setThemeMode(ThemeMode theme) async {
+  Future<void> setAppTheme(ThemeMode theme) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await localStorage.setItem(SettingKey.appTheme.name, theme.index);
@@ -99,52 +99,4 @@ enum SettingKey {
   baseUrl,
   appTheme,
   locale,
-}
-
-@freezed
-class SettingItem with _$SettingItem {
-  const factory SettingItem({
-    required SettingKey key,
-    required String title,
-    String? subtitle,
-    dynamic value,
-    @Default(false) bool multiline,
-    required String hint,
-  }) = _SettingItem;
-}
-
-@riverpod
-List<SettingItem> settingList(SettingListRef ref) {
-  final settings = ref.watch(settingStateProvider).valueOrNull;
-
-  return [
-    SettingItem(
-      key: SettingKey.apiKey,
-      title: "API Key",
-      subtitle: settings?.apiKey,
-      hint: "Please input API Key",
-    ),
-    SettingItem(
-        key: SettingKey.httpProxy,
-        title: "HTTP Proxy",
-        subtitle: settings?.httpProxy,
-        hint: "Please input HTTP Proxy"),
-    SettingItem(
-        key: SettingKey.baseUrl,
-        title: "Reverse proxy URL",
-        subtitle: settings?.baseUrl,
-        hint: "https://openai.proxy.dev/v1"),
-    SettingItem(
-      key: SettingKey.appTheme,
-      title: "App Theme",
-      hint: "app theme",
-      value: settings?.appTheme,
-    ),
-    SettingItem(
-      key: SettingKey.locale,
-      title: "Language",
-      hint: "app language",
-      value: settings?.locale,
-    ),
-  ];
 }
