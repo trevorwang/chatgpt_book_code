@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../injection.dart';
+import '../intl.dart';
 import '../models/message.dart';
 import '../models/session.dart';
 import '../states/chat_ui_state.dart';
@@ -52,8 +53,10 @@ class AudioInputWidget extends HookConsumerWidget {
       child: transcripting.value || uiState.requestLoading
           ? ElevatedButton(
               onPressed: null,
-              child:
-                  Text(transcripting.value ? "Transcripting..." : "Loading..."))
+              child: Text(transcripting.value
+                  ? AppIntl.of(context)!.transcriptingLabel
+                  : AppIntl.of(context)!.loading),
+            )
           : GestureDetector(
               onLongPressStart: (details) {
                 recording.value = true;
@@ -79,7 +82,11 @@ class AudioInputWidget extends HookConsumerWidget {
               },
               child: ElevatedButton(
                 onPressed: () {},
-                child: Text(recording.value ? "Recording..." : "Hold to speak"),
+                child: Text(
+                  recording.value
+                      ? AppIntl.of(context)!.recording
+                      : AppIntl.of(context)!.holdingToSpeakLabel,
+                ),
               ),
             ),
     );
@@ -100,7 +107,7 @@ class TextInputWidget extends HookConsumerWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        hintText: 'Type a message...', // 显示在输入框内的提示文字
+        hintText: AppIntl.of(context)!.chatInputHint, // 显示在输入框内的提示文字
         suffixIcon: SizedBox(
           width: 40,
           child: uiState.requestLoading

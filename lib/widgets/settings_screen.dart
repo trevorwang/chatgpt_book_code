@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../intl.dart';
 import '../states/settings_state.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -77,7 +78,7 @@ class SettingsWindow extends HookConsumerWidget {
                         .read(settingStateProvider.notifier)
                         .setThemeMode(ThemeMode.system);
                   },
-                  child: const Text('System'),
+                  child: Text(AppIntl.of(context)!.themeSystem),
                 ),
                 RadioMenuButton(
                   value: ThemeMode.light,
@@ -87,7 +88,7 @@ class SettingsWindow extends HookConsumerWidget {
                         .read(settingStateProvider.notifier)
                         .setThemeMode(ThemeMode.light);
                   },
-                  child: const Text('Light'),
+                  child: Text(AppIntl.of(context)!.themeLight),
                 ),
                 RadioMenuButton(
                   value: ThemeMode.dark,
@@ -97,7 +98,7 @@ class SettingsWindow extends HookConsumerWidget {
                         .read(settingStateProvider.notifier)
                         .setThemeMode(ThemeMode.dark);
                   },
-                  child: const Text('Dark'),
+                  child: Text(AppIntl.of(context)!.themeDark),
                 ),
               ],
             ),
@@ -140,13 +141,13 @@ class SettingsWindow extends HookConsumerWidget {
         actions: [
           // negitive button
           TextButton(
-            child: const Text('Cancel'),
+            child: Text(AppIntl.of(context)!.cancel),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: const Text('OK'),
+            child: Text(AppIntl.of(context)!.ok),
             onPressed: () {
               final text = controller.text;
               controller.clear();
