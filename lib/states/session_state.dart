@@ -1,7 +1,7 @@
+import 'package:chatgpt/injection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../injection.dart';
 import '../models/session.dart';
 
 part 'session_state.g.dart';
@@ -10,38 +10,67 @@ part 'session_state.freezed.dart';
 @freezed
 class SessionState with _$SessionState {
   const factory SessionState({
-    @Default(<Session>[]) List<Session> sessions,
-    Session? active,
+    required List<Session> sessionList,
+    required Session? activeSession,
   }) = _SessionState;
 }
 
-@Riverpod(keepAlive: true)
-class SessionWithMessage extends _$SessionWithMessage {
-  FutureOr<List<Session>> _featchData() async {
-    final sessions = await db.sessionDao.findAllSessions();
-    return sessions;
+@riverpod
+class SessionStateNotifier extends _$SessionStateNotifier {
+  Future<List<Session>> _fetchData() async {
+    return await db.sessionDao.findAllSessions();
   }
 
   @override
   FutureOr<SessionState> build() async {
-    return SessionState(sessions: await _featchData());
+    final sessionList = await _fetchData();
+    return SessionState(sessionList: sessionList, activeSession: null);
   }
 
-  Future<Session> insertSession(Session session) async {
-    var session0 = session;
+  Future<Session> upsertSesion(Session session) async {
+    var active = session;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final id = await db.sessionDao.upsertSession(session);
-      session0 = session.copyWith(id: id);
-      return SessionState(active: session0, sessions: await _featchData());
+      active = active.copyWith(id: id);
+      return SessionState(
+          sessionList: await _fetchData(), activeSession: active);
     });
-    return session0;
+    return active;
   }
 
-  Future<void> active(Session? session) async {
+  Future<void> updateSesion(Session session) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return Future.value(state.value?.copyWith(active: session));
+      final id = await db.sessionDao.upsertSession(session);
+      return SessionState(
+          sessionList: await _fetchData(),
+          activeSession: state.valueOrNull?.activeSession);
     });
   }
+
+  Future<void> deleteSession(Session session) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await db.sessionDao.deleteSession(session);
+      return SessionState(
+          sessionList: await _fetchData(),
+          activeSession: state.valueOrNull?.activeSession);
+    });
+  }
+
+  Future<void> setActiveSession(Session? session) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      return SessionState(
+          sessionList: state.valueOrNull?.sessionList ?? [],
+          activeSession: session);
+    });
+  }
+}
+
+@riverpod
+Session? activeSession(ActiveSessionRef ref) {
+  final state = ref.watch(sessionStateNotifierProvider).valueOrNull;
+  return state?.activeSession;
 }

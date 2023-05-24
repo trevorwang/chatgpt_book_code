@@ -1,31 +1,36 @@
-import 'package:chatgpt/router.dart';
-import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'injection.dart';
+import 'router.dart';
+import 'states/settings_state.dart';
+import 'theme.dart';
+import 'utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initWindow(); // only works for desktop
-  await initDatabase();
+  await setupDatabse();
   await chatgpt.loadConfig();
+  initWindow();
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends HookConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingStateProvider).valueOrNull;
     return MaterialApp.router(
+      locale: settings?.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       debugShowCheckedModeBanner: false,
-      title: 'ChatGPT',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      routerConfig: isDesktop() ? desktopRouter : router,
+      theme: lightThemeData,
+      darkTheme: darkThemeData,
+      themeMode: settings?.appTheme,
+      routerConfig: router,
     );
   }
 }

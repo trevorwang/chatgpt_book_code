@@ -1,76 +1,39 @@
-import 'package:chatgpt/models/session.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:openai_api/openai_api.dart';
 
 import '../states/chat_ui_state.dart';
 import '../states/session_state.dart';
+import 'chat_gpt_model_widget.dart';
+import 'chat_input.dart';
 import 'chat_message_list.dart';
-import 'chat_user_input.dart';
 
 class ChatWindowScreen extends HookConsumerWidget {
   const ChatWindowScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final active = ref.watch(sessionWithMessageProvider
-        .select((value) => value.valueOrNull?.active));
-    return Column(
-      children: [
-        GptModelWidget(
-          active: active,
-          onModelChanged: (model) =>
-              ref.read(chatUiSateProvider.notifier).model = model,
-        ),
-        const Expanded(
-          // 聊天消息列表
-          child: ChatMessageList(),
-        ),
-        // 输入框
-        const UserInputWidget(),
-      ],
-    );
-  }
-}
-
-class GptModelWidget extends HookWidget {
-  final Function(Model model)? onModelChanged;
-  const GptModelWidget({
-    super.key,
-    required this.active,
-    this.onModelChanged,
-  });
-
-  final Session? active;
-
-  @override
-  Widget build(BuildContext context) {
-    final state = useState<Model>(Model.gpt3_5Turbo);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text('Model: '),
-        active == null
-            ? DropdownButton<Model>(
-                items: [Model.gpt3_5Turbo, Model.gpt4].map((e) {
-                  return DropdownMenuItem(
-                    value: e,
-                    child: Text(e.label),
-                  );
-                }).toList(),
-                value: state.value,
-                onChanged: (Model? item) {
-                  if (item == null) return;
-                  state.value = item;
-                  onModelChanged?.call(item);
-                },
-              )
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(active?.model.toModel().label ?? ""),
-              ),
-      ],
+    final activeSession = ref.watch(activeSessionProvider);
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          GptModelWidget(
+            active: activeSession?.model.toModel(),
+            onModelChanged: (model) {
+              ref.read(chatUiProvider.notifier).model = model;
+            },
+          ),
+          const Expanded(
+            // 聊天消息列表
+            child: ChatMessageListWidget(),
+          ),
+          const Divider(
+            indent: 0,
+            height: 16,
+          ),
+          // 输入框
+          const ChatInputWidget(),
+        ],
+      ),
     );
   }
 }

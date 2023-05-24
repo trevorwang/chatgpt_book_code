@@ -13,14 +13,15 @@ class Message {
     parentColumns: ['id'],
     entity: Message,
   )
-  final int sessionId;
+  @ColumnInfo(name: "session_id")
+  final int? sessionId;
 
   Message({
     required this.id,
     required this.content,
     required this.isUser,
     required this.timestamp,
-    required this.sessionId,
+    this.sessionId,
   });
 
   @override

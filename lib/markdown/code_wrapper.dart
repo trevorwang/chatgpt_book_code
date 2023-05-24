@@ -13,10 +13,10 @@ class CodeWrapperWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasCopied = useState(false);
+    final copied = useState(false);
 
-    final switchIcon = Icon(hasCopied.value ? Icons.check : Icons.copy_rounded,
-        key: UniqueKey());
+    final switchIcon =
+        Icon(copied.value ? Icons.check : Icons.copy_rounded, key: UniqueKey());
     return Stack(
       children: [
         child,
@@ -30,11 +30,11 @@ class CodeWrapperWidget extends HookWidget {
                 child: switchIcon,
               ),
               onTap: () async {
-                if (hasCopied.value) return;
+                if (copied.value) return;
                 await Clipboard.setData(ClipboardData(text: text));
-                hasCopied.value = true;
-                Future.delayed(const Duration(seconds: 1), () {
-                  hasCopied.value = false;
+                copied.value = true;
+                Future.delayed(const Duration(seconds: 2), () {
+                  copied.value = false;
                 });
               },
             ),

@@ -1,35 +1,40 @@
 import 'dart:io';
 
+import 'package:chatgpt/utils.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../injection.dart';
 
-class RecordingSeorvice {
+class RecordService {
   final r = Record();
-
-  record({String? fileName}) async {
+  Future start({String? fileName}) async {
     if (await r.hasPermission()) {
+      if (await isRecording) {
+        logger.e("is recording......");
+        return;
+      }
       final path = await getTemporaryDirectory();
 
-      final d = Directory("${path.absolute.path}/audios/");
+      final d = Directory("${path.absolute.path}/audios");
       await d.create(recursive: true);
 
-      final file =
-          File("${d.path}/${DateTime.now().microsecondsSinceEpoch}.m4a");
-      logger.d('path: ${file.path}');
+      final file = File(
+          "${d.path}/${fileName ?? DateTime.now().microsecondsSinceEpoch}.m4a");
+      logger.v('start path: ${file.path}');
 
       await r.start(
-        path: Uri.file(file.path).toString(),
+        path: isApplePlatform() ? Uri.file(file.path).toString() : file.path,
       );
     }
   }
 
   Future<String?> stop() async {
-    return await r.stop();
+    final path = await r.stop();
+    logger.v('stop path: $path');
+    if (path == null) return null;
+    return isApplePlatform() ? Uri.parse(path).toFilePath() : path;
   }
 
-  Future<bool> isRecording() async {
-    return await r.isRecording();
-  }
+  Future<bool> get isRecording => r.isRecording();
 }

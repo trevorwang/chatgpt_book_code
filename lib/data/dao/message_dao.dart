@@ -16,6 +16,6 @@ abstract class MessageDao {
   @delete
   Future<void> deleteMessage(Message message);
 
-  @Query('SELECT * FROM Message WHERE sessionId = :sessionId')
+  @Query('SELECT * FROM Message WHERE session_id = :sessionId')
   Future<List<Message>> findMessagesBySessionId(int sessionId);
 }

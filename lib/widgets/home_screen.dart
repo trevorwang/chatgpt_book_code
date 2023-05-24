@@ -5,6 +5,59 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../states/session_state.dart';
 import 'chat_history.dart';
 import 'chat_screen.dart';
+import 'desktop.dart';
+import '../intl.dart';
+import 'settings_screen.dart';
+
+class DesktopHomeScreen extends StatelessWidget {
+  const DesktopHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: DesktopWindow(
+        child: Row(
+          children: [
+            SizedBox(
+                width: 240,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    const NewChatButton(),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    const Expanded(
+                      child: ChatHistoryWindow(),
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: Text(AppIntl.of(context).settingsTitle),
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                  title:
+                                      Text(AppIntl.of(context).settingsTitle),
+                                  content: const SizedBox(
+                                    height: 400,
+                                    width: 400,
+                                    child: SettingsWindow(),
+                                  ));
+                            });
+                      },
+                    )
+                  ],
+                )),
+            const Expanded(child: ChatScreen()),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -13,69 +66,90 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //   icon: const Icon(Icons.history),
-        //   onPressed: () => GoRouter.of(context).push('/history'),
-        // ),
-        title: const Text('Chat'),
+        title: Text(AppIntl.of(context).chatScreenTitle),
         actions: [
-          // new button
           IconButton(
+            onPressed: () {
+              ref
+                  .read(sessionStateNotifierProvider.notifier)
+                  .setActiveSession(null);
+            },
             icon: const Icon(Icons.add),
-            onPressed: () {
-              ref.read(sessionWithMessageProvider.notifier).active(null);
-            },
           ),
-
-          //   PopupMenuButton<String>(
-          //     icon: const Icon(Icons.more_vert_outlined),
-          //     initialValue: "",
-          //     // Callback that sets the selected popup menu item.
-          //     onSelected: (String item) {},
-          //     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          //       PopupMenuItem<String>(
-          //         value: "1",
-          //         child: const Text('History'),
-          //         onTap: () => GoRouter.of(context).go('/history'),
-          //       ),
-          //     ],
-          //   ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              GoRouter.of(context).push('/settings');
-            },
-          )
         ],
       ),
+      body: const ChatScreen(),
       drawer: Drawer(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
+            DrawerHeader(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               child: Text(
-                'Chat History',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+                AppIntl.of(context).chatHistoryTitle,
+                style: const TextStyle(color: Colors.white, fontSize: 22),
               ),
             ),
             Expanded(
               child: MediaQuery.removePadding(
-                // remove the top padding
-                context: context,
                 removeTop: true,
-                child: const ChatHistoryList(),
+                context: context,
+                child: const ChatHistoryWindow(),
               ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(AppIntl.of(context).settingsTitle),
+              onTap: () {
+                Navigator.of(context).pop();
+                GoRouter.of(context).push('/settings');
+              },
             ),
           ],
         ),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: ChatWindowScreen(),
+    );
+  }
+}
+
+class NewChatButton extends HookConsumerWidget {
+  const NewChatButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: SizedBox(
+        height: 40,
+        child: OutlinedButton.icon(
+          style: ButtonStyle(
+            textStyle: MaterialStateProperty.all(
+              Theme.of(context).textTheme.titleMedium,
+            ),
+            iconSize:
+                MaterialStateProperty.all(Theme.of(context).iconTheme.size),
+            alignment: Alignment.centerLeft,
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            iconColor: MaterialStateProperty.all(
+                Theme.of(context).textTheme.titleMedium?.color),
+            foregroundColor: MaterialStateProperty.all(
+                Theme.of(context).textTheme.titleMedium?.color),
+          ),
+          onPressed: () {
+            ref
+                .read(sessionStateNotifierProvider.notifier)
+                .setActiveSession(null);
+          },
+          icon: const Icon(
+            Icons.add,
+          ),
+          label: Text(AppIntl.of(context).newChatTitle),
+        ),
       ),
     );
   }
