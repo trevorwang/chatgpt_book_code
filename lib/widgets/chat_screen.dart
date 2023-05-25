@@ -14,25 +14,27 @@ class ChatScreen extends HookConsumerWidget {
     final activeSession = ref.watch(activeSessionProvider);
     return Container(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          GptModelWidget(
-            active: activeSession?.model.toModel(),
-            onModelChanged: (model) {
-              ref.read(chatUiProvider.notifier).model = model;
-            },
-          ),
-          const Expanded(
-            // 聊天消息列表
-            child: ChatMessageListWidget(),
-          ),
-          const Divider(
-            indent: 0,
-            height: 16,
-          ),
-          // 输入框
-          const ChatInputWidget(),
-        ],
+      child: SelectionArea(
+        child: Column(
+          children: [
+            GptModelWidget(
+              active: activeSession?.model.toModel(),
+              onModelChanged: (model) {
+                ref.read(chatUiProvider.notifier).model = model;
+              },
+            ),
+            const Expanded(
+              // 聊天消息列表
+              child: ChatMessageListWidget(),
+            ),
+            const Divider(
+              indent: 0,
+              height: 16,
+            ),
+            // 输入框
+            const ChatInputWidget(),
+          ],
+        ),
       ),
     );
   }
