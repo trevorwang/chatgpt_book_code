@@ -1,11 +1,14 @@
 import 'package:chatgpt/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
 import '../models/session.dart';
+import '../shortcuts/actions.dart';
+import '../shortcuts/intents.dart';
 import '../states/chat_ui_state.dart';
 import '../states/message_state.dart';
 import '../states/session_state.dart';
@@ -97,37 +100,66 @@ class TextInputWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useTextEditingController();
     final uiState = ref.watch(chatUiProvider);
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        hintText: AppIntl.of(context).chatInputHint, // 显示在输入框内的提示文字
-        suffixIcon: SizedBox(
-          width: 40,
-          child: uiState.requestLoading
-              ? const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
+
+    return Shortcuts(
+      shortcuts: <LogicalKeySet, Intent>{
+        LogicalKeySet(LogicalKeyboardKey.enter): const SentIntent(),
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.enter):
+            const LineBreakIntent(),
+        LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.enter):
+            const LineBreakIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.enter):
+            const LineBreakIntent(),
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          LineBreakIntent: LineBreakAction(
+            controller: controller,
+          ),
+          SentIntent: SentAction(
+            callback: () {
+              if (controller.text.trim().isNotEmpty) {
+                _sendMessage(ref, controller);
+              }
+            },
+          ),
+        },
+        child: TextField(
+          controller: controller,
+          minLines: 1,
+          maxLines: 3,
+          scrollPadding: EdgeInsets.zero,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            hintText: AppIntl.of(context).chatInputHint, // 显示在输入框内的提示文字
+            suffixIcon: SizedBox(
+              width: 40,
+              child: uiState.requestLoading
+                  ? const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        // 这里处理发送事件
+                        if (controller.text.trim().isNotEmpty) {
+                          _sendMessage(ref, controller);
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.send,
+                      ),
                     ),
-                  ),
-                )
-              : IconButton(
-                  onPressed: () {
-                    // 这里处理发送事件
-                    if (controller.text.trim().isNotEmpty) {
-                      _sendMessage(ref, controller);
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.send,
-                  ),
-                ),
+            ),
+          ),
         ),
       ),
     );
@@ -136,6 +168,8 @@ class TextInputWidget extends HookConsumerWidget {
 
 // 增加WidgetRef
 _sendMessage(WidgetRef ref, TextEditingController controller) async {
+  final loading = ref.watch(chatUiProvider).requestLoading;
+  if (loading) return;
   final content = controller.text;
   controller.clear();
   return __sendMessage(ref, content);
