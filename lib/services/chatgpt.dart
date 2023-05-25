@@ -1,10 +1,9 @@
-import 'package:chatgpt/env.dart';
-import 'package:chatgpt/models/message.dart';
-import 'package:chatgpt/states/settings_state.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:tiktoken/tiktoken.dart';
 
 import '../injection.dart';
+import '../models/message.dart';
+import '../states/settings_state.dart';
 
 class ChatGPTService {
   final client = OpenaiClient(
@@ -40,7 +39,15 @@ class ChatGPTService {
     final request = ChatCompletionRequest(
       model: model,
       stream: true,
-      messages: messages.toChatMessages().limitMessages(),
+      messages: messages.toChatMessages().limitMessages()
+        ..insert(
+          0,
+          const ChatMessage(
+            content:
+                "You're an AI assistant. Answer user's questions correctly. Response in Markdown format with LaTeX syntax.",
+            role: ChatMessageRole.system,
+          ),
+        ),
     );
     return await client.sendChatCompletionStream(
       request,

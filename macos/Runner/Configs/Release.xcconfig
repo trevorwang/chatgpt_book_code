@@ -1,2 +1,4 @@
 #include "../../Flutter/Flutter-Release.xcconfig"
 #include "Warnings.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = mingsin.chatgpt
