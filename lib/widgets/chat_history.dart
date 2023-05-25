@@ -80,7 +80,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                           editMode.value = false;
                         }
                       },
-                      icon: const Icon(Icons.save),
+                      icon: const Icon(Icons.check_box),
                     ),
                     IconButton(
                       onPressed: () {
