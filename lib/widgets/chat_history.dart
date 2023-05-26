@@ -59,6 +59,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
       onEnter: (event) => hover.value = true,
       onExit: (event) => hover.value = false,
       child: Material(
+        color: Colors.transparent,
         child: ListTile(
           title: editMode.value
               ? Row(

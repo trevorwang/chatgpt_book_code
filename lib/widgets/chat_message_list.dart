@@ -1,9 +1,3 @@
-import 'package:chatgpt/injection.dart';
-import 'package:chatgpt/states/session_state.dart';
-import 'package:chatgpt/tools/error.dart';
-import 'package:chatgpt/tools/files.dart';
-import 'package:chatgpt/tools/share.dart';
-import 'package:chatgpt/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,6 +10,13 @@ import '../models/message.dart';
 import '../states/message_state.dart';
 import '../states/chat_ui_state.dart';
 import '../theme.dart';
+import '../colors.dart';
+import '../injection.dart';
+import '../states/session_state.dart';
+import '../tools/error.dart';
+import '../tools/files.dart';
+import '../tools/share.dart';
+import '../utils.dart';
 import 'typing_cursor.dart';
 
 class ChatMessageListWidget extends HookConsumerWidget {
@@ -133,15 +134,14 @@ class ChatMessageList extends HookConsumerWidget {
         return msg.isUser
             ? SentMessageItem(
                 message: msg,
-                // backgroundColor: const Color(0xFF8FE869), //TODO
                 backgroundColor: isDarkMode(context)
-                    ? const Color(0xFF28B561)
-                    : const Color(0xFF8FE869),
+                    ? sentMessageBgDark
+                    : sentMessageBgLight,
               )
             : ReceivedMessageItem(
-                backgroundColor: isDarkMode(context) // TODO
-                    ? Colors.black
-                    : Colors.black.withOpacity(.05),
+                backgroundColor: isDarkMode(context)
+                    ? receivedMessageBgDark
+                    : receivedMessageBgLight,
                 message: msg,
                 typing: index == messages.length - 1 && uiState.requestLoading,
               );
@@ -177,9 +177,10 @@ class ReceivedMessageItem extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         CircleAvatar(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           child: SvgPicture.asset(
             "assets/images/chatgpt.svg",
+            color: Theme.of(context).iconTheme.color,
           ),
         ),
         const SizedBox(
@@ -245,13 +246,9 @@ class SentMessageItem extends StatelessWidget {
           width: 8,
         ),
         const CircleAvatar(
-            backgroundColor: Colors.blue,
             child: Text(
-              'A',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            )),
+          'A',
+        )),
       ],
     );
   }

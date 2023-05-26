@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chatgpt/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -45,7 +46,7 @@ class ExportService {
       child: RepaintBoundary(
         key: key,
         child: Container(
-          color: const Color(0xFFF1F1F1),
+          color: bgLight,
           padding: const EdgeInsets.all(16),
           child: Column(
             children: messages
@@ -53,7 +54,7 @@ class ExportService {
                       msg.isUser
                           ? SentMessageItem(
                               message: msg,
-                              backgroundColor: const Color(0xFF8FE869),
+                              backgroundColor: sentMessageBgLight,
                             )
                           : ReceivedMessageItem(
                               message: msg,

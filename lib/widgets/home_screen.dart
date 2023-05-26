@@ -51,6 +51,9 @@ class DesktopHomeScreen extends StatelessWidget {
                     )
                   ],
                 )),
+            const VerticalDivider(
+              width: 1,
+            ),
             const Expanded(child: ChatScreen()),
           ],
         ),

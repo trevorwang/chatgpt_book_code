@@ -30,7 +30,7 @@ class TypingCursor extends HookWidget {
         margin: const EdgeInsets.symmetric(vertical: 2),
         width: 6,
         height: 12,
-        color: Colors.black,
+        color: Theme.of(context).textTheme.bodyMedium?.color,
       ),
     );
   }
