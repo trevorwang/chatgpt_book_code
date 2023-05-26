@@ -159,7 +159,6 @@
 				24FA500E0787148EF02B89A8 /* Pods-Runner.release.xcconfig */,
 				CBFCDC2C53B2EF4AAE8617FE /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -573,6 +572,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = mingsin.chatgpt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
