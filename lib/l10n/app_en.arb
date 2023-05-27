@@ -27,5 +27,6 @@
   "themeLight": "Light",
   "themeSystem": "System",
   "transcriptingLabel": "Transcripting...",
-  "unkonwSettingLabel": "Unknown"
+  "unkonwSettingLabel": "Unknown",
+  "stopResponsing": "Stop Responsing"
 }

@@ -27,5 +27,6 @@
   "themeLight": "明亮",
   "themeSystem": "跟随系统",
   "transcriptingLabel": "识别中...",
-  "unkonwSettingLabel": "未设置"
+  "unkonwSettingLabel": "未设置",
+  "stopResponsing": "停止响应"
 }

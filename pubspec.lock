@@ -153,6 +153,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "8.6.0"
+  cancellation_token:
+    dependency: transitive
+    description:
+      name: cancellation_token
+      sha256: "7bacc556338b9f84e4db991805fdfa37fa1eda3689b94185bdc7459099455d71"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
+  cancellation_token_http:
+    dependency: transitive
+    description:
+      name: cancellation_token_http
+      sha256: bb91655e2e47d6274b681261ee6a687b7aa9023f49cfc28f42d095b2f86febc3
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.3.0"
   characters:
     dependency: transitive
     description:
@@ -509,14 +525,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.6"
-  http:
-    dependency: transitive
-    description:
-      name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.13.6"
   http_multi_server:
     dependency: transitive
     description:
@@ -673,10 +681,10 @@ packages:
     dependency: "direct main"
     description:
       name: openai_api
-      sha256: "19f42cddc1aee8fb2e78ef459e5ece798f7690fe693e9156ade6afaf7708fd26"
+      sha256: "13ce1edff5ddbfa1f0f262bb9cfe1807437c8e22e6587d3485f1371e31d4089d"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.0.5"
+    version: "0.0.6"
   package_config:
     dependency: transitive
     description:

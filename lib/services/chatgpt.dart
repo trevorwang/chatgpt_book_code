@@ -35,6 +35,7 @@ class ChatGPTService {
     List<Message> messages, {
     Function(String text)? onSuccess,
     Model model = Model.gpt3_5Turbo,
+    CancellationToken? cancellationToken,
   }) async {
     final request = ChatCompletionRequest(
       model: model,
@@ -57,12 +58,18 @@ class ChatGPTService {
           onSuccess?.call(text);
         }
       },
+      cancellationToken: cancellationToken,
     );
   }
 
-  Future<String> speechToText(String path) async {
-    final res =
-        await client.createTrascription(TranscriptionRequest(file: path));
+  Future<String> speechToText(
+    String path, {
+    CancellationToken? cancellationToken,
+  }) async {
+    final res = await client.createTrascription(
+      TranscriptionRequest(file: path),
+      cancellationToken: cancellationToken,
+    );
     logger.v(res);
     return res.text;
   }

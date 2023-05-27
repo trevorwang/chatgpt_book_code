@@ -1,27 +1,36 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:openai_api/openai_api.dart';
 
-class ChatUiState {
-  final bool requestLoading;
-  final Model model;
-  ChatUiState({
-    this.requestLoading = false,
-    this.model = Model.gpt3_5Turbo,
-  });
+part 'chat_ui_state.freezed.dart';
+
+@freezed
+class ChatUiState with _$ChatUiState {
+  const factory ChatUiState({
+    @Default(false) bool requestLoading,
+    @Default(Model.gpt3_5Turbo) Model model,
+    CancellationToken? cancellationToken,
+  }) = _ChatUiState;
 }
 
 class ChatUiStateProvider extends StateNotifier<ChatUiState> {
-  ChatUiStateProvider() : super(ChatUiState());
+  ChatUiStateProvider() : super(const ChatUiState());
 
   void setRequestLoading(bool requestLoading) {
-    state = ChatUiState(
+    state = state.copyWith(
       requestLoading: requestLoading,
     );
   }
 
   set model(Model model) {
-    state = ChatUiState(
+    state = state.copyWith(
       model: model,
+    );
+  }
+
+  set cancellationToken(CancellationToken? cancellationToken) {
+    state = state.copyWith(
+      cancellationToken: cancellationToken,
     );
   }
 }

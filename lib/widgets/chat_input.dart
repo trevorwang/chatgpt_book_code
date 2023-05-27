@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -228,6 +229,9 @@ _requestChatGPT(
 
   handleError(ref.context, () async {
     final id = uuid.v4();
+    final token = CancellationToken();
+    ref.read(chatUiProvider.notifier).setRequestLoading(true);
+    ref.read(chatUiProvider.notifier).cancellationToken = token;
     await chatgpt.streamChat(
       messages,
       model: activeSession?.model.toModel() ?? uiState.model,
@@ -236,6 +240,7 @@ _requestChatGPT(
             _createMessage(text, id: id, isUser: false, sessionId: sessionId);
         ref.read(messageProvider.notifier).upsertMessage(message);
       },
+      cancellationToken: token,
     );
   }, finallyFn: () {
     ref.read(chatUiProvider.notifier).setRequestLoading(false);

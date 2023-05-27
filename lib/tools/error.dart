@@ -34,6 +34,8 @@ void handleError(
 }) async {
   try {
     await fn();
+  } on CancelledException catch (e) {
+    logger.e("err: $e", e);
   } on OpenaiException catch (e) {
     logger.e("err: $e", e);
     final msg = errorMessageFromCode(context, e.code);

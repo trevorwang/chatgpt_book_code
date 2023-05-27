@@ -1,3 +1,4 @@
+import 'package:chatgpt/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +28,7 @@ class ChatMessageListWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeSessionProvider);
     final scrollController = useScrollController();
+    final uiState = ref.watch(chatUiProvider);
     final chatListKey = GlobalKey();
     return Column(
       key: chatListKey,
@@ -36,72 +38,90 @@ class ChatMessageListWidget extends HookConsumerWidget {
             listController: scrollController,
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () {
-                if (active != null) {
-                  handleError(context, () async {
-                    if (isDesktop()) {
-                      final path = await saveAs(fileName: "${active.title}.md");
-                      if (path == null) return; //取消选择
-                      exportService.exportMarkdown(
-                        active,
-                        path: path,
-                      );
-                    } else {
-                      final output = await exportService.exportMarkdown(active);
-                      if (output == null) return;
-                      shareFiles([output]);
+        SizedBox(
+          height: 48,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (uiState.requestLoading)
+                ElevatedButton.icon(
+                  style: const ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll<Color>(Colors.red)),
+                  onPressed: () {
+                    if (uiState.requestLoading) {
+                      uiState.cancellationToken?.cancel();
                     }
-                  });
-                }
-              },
-              icon: const Icon(Icons.text_snippet),
-            ),
-            IconButton(
-              onPressed: () {
-                if (active != null) {
-                  final renderbox = chatListKey.currentContext!
-                      .findRenderObject() as RenderBox;
+                  },
+                  icon: const Icon(Icons.stop),
+                  label: Text(AppIntl.of(context).stopResponsing),
+                ),
+              IconButton(
+                onPressed: () {
+                  if (active != null) {
+                    handleError(context, () async {
+                      if (isDesktop()) {
+                        final path =
+                            await saveAs(fileName: "${active.title}.md");
+                        if (path == null) return; //取消选择
+                        exportService.exportMarkdown(
+                          active,
+                          path: path,
+                        );
+                      } else {
+                        final output =
+                            await exportService.exportMarkdown(active);
+                        if (output == null) return;
+                        shareFiles([output]);
+                      }
+                    });
+                  }
+                },
+                icon: const Icon(Icons.text_snippet),
+              ),
+              IconButton(
+                onPressed: () {
+                  if (active != null) {
+                    final renderbox = chatListKey.currentContext!
+                        .findRenderObject() as RenderBox;
 
-                  scrollController.animateTo(
-                    scrollController.position.maxScrollExtent,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.linear,
-                  );
-                  // Future.delayed(const Duration(milliseconds: 500));
-                  final height = scrollController.position.maxScrollExtent +
-                      scrollController.position.viewportDimension;
-                  handleError(context, () async {
-                    if (isDesktop()) {
-                      final path =
-                          await saveAs(fileName: "${active.title}.png");
-                      if (path == null) return;
-                      exportService.exportImage(
-                        active,
-                        context: ref.context,
-                        targetSize:
-                            Size(renderbox.size.width + 32, height + 48),
-                        path: path,
-                      );
-                    } else {
-                      final output = await exportService.exportImage(
-                        active,
-                        context: ref.context,
-                        targetSize:
-                            Size(renderbox.size.width + 32, height + 48),
-                      );
-                      if (output == null) return;
-                      shareFiles([output]);
-                    }
-                  });
-                }
-              },
-              icon: const Icon(Icons.image),
-            ),
-          ],
+                    scrollController.animateTo(
+                      scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.linear,
+                    );
+                    // Future.delayed(const Duration(milliseconds: 500));
+                    final height = scrollController.position.maxScrollExtent +
+                        scrollController.position.viewportDimension;
+                    handleError(context, () async {
+                      if (isDesktop()) {
+                        final path =
+                            await saveAs(fileName: "${active.title}.png");
+                        if (path == null) return;
+                        exportService.exportImage(
+                          active,
+                          context: ref.context,
+                          targetSize:
+                              Size(renderbox.size.width + 32, height + 48),
+                          path: path,
+                        );
+                      } else {
+                        final output = await exportService.exportImage(
+                          active,
+                          context: ref.context,
+                          targetSize:
+                              Size(renderbox.size.width + 32, height + 48),
+                        );
+                        if (output == null) return;
+                        shareFiles([output]);
+                      }
+                    });
+                  }
+                },
+                icon: const Icon(Icons.image),
+              ),
+            ],
+          ),
         )
       ],
     );
