@@ -141,10 +141,12 @@ class ChatMessageList extends HookConsumerWidget {
     final uiState = ref.watch(chatUiProvider);
 
     ref.listen(activeSessionMessagesProvider, (previous, next) {
-      Future.delayed(const Duration(milliseconds: 50), () {
+      Future.delayed(const Duration(milliseconds: 200), () {
         listController.jumpTo(
           listController.position.maxScrollExtent,
         );
+        logger.v(
+            "jump to bottom......${listController.position.maxScrollExtent}");
       });
     });
     return ListView.separated(
