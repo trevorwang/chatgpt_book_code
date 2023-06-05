@@ -9,21 +9,47 @@ import 'package:chatgpt/widgets/chat_gpt_model_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:openai_api/openai_api.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('GptModel Dropdown', (WidgetTester tester) async {
     // Build our app and trigger a frame.
+    const dropdown = GptModelWidget(
+      active: null,
+    );
     await tester.pumpWidget(const MaterialApp(
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       home: Scaffold(
-        body: GptModelWidget(
-          active: null,
+        body: SizedBox(
+          height: 32,
+          child: dropdown,
         ),
       ),
     ));
-
+    await tester.pumpAndSettle();
     expect(find.text('GPT-3.5'), findsOneWidget);
+    expect(find.byType(DropdownMenuItem<Model>), findsWidgets);
+  });
+
+  testWidgets('GptModel value', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    const dropdown = GptModelWidget(
+      active: Model.gpt4,
+    );
+    await tester.pumpWidget(const MaterialApp(
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: Scaffold(
+        body: SizedBox(
+          height: 32,
+          child: dropdown,
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('GPT-3.5'), findsNothing);
+    expect(find.byType(DropdownMenuItem<Model>), findsNothing);
     expect(find.text('GPT-4'), findsOneWidget);
   });
 }
