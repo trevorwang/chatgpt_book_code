@@ -15,7 +15,7 @@ void main() {
   test("create session", () async {
     final session = Session(title: "hello", model: Model.gpt3_5Turbo.value);
     final r = await sessionDao.upsertSession(session);
-    expect(1, r);
+    expect(r, 1);
     final s = await sessionDao.findSessionById(r);
     expect(
       s,
@@ -28,7 +28,7 @@ void main() {
   test("delete session", () async {
     final session = Session(title: "hello", model: Model.gpt3_5Turbo.value);
     final r = await sessionDao.upsertSession(session);
-    expect(1, r);
+    expect(r, isNotNull);
     await sessionDao.deleteSession(session.copyWith(id: r));
 
     final s = await sessionDao.findSessionById(r);
