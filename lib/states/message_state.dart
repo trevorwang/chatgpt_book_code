@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
-import '../models/session.dart';
 
 part 'message_state.g.dart';
 
@@ -13,7 +12,9 @@ class MessageList extends StateNotifier<List<Message>> {
     init();
   }
 
-  Future<void> init() async {}
+  Future<void> init() async {
+    state = await db.messageDao.findAllMessages();
+  }
 
   void upsertMessage(Message partialMessage) {
     final index =
@@ -42,15 +43,9 @@ final messageProvider = StateNotifierProvider<MessageList, List<Message>>(
 );
 
 @riverpod
-FutureOr<List<Message>> sessionMessages(
-    SessionMessagesRef ref, Session session) async {
-  return await db.messageDao.findMessagesBySessionId(session.id!);
-}
-
-@riverpod
 List<Message> activeSessionMessages(ActiveSessionMessagesRef ref) {
   final active = ref.watch(activeSessionProvider);
-  final messages =
-      ref.watch(sessionMessagesProvider(active!)).valueOrNull ?? [];
+  final messages = ref.watch(messageProvider.select((value) =>
+      value.where((element) => element.sessionId == active?.id).toList()));
   return messages;
 }
