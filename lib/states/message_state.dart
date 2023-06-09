@@ -50,7 +50,9 @@ FutureOr<List<Message>> sessionMessages(
 @riverpod
 List<Message> activeSessionMessages(ActiveSessionMessagesRef ref) {
   final active = ref.watch(activeSessionProvider);
-  final messages =
-      ref.watch(sessionMessagesProvider(active!)).valueOrNull ?? [];
+  if (active == null) {
+    return [];
+  }
+  final messages = ref.watch(sessionMessagesProvider(active)).valueOrNull ?? [];
   return messages;
 }
