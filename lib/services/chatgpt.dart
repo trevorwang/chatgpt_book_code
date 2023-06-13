@@ -45,7 +45,7 @@ class ChatGPTService {
           0,
           const ChatMessage(
             content:
-                "You're an AI assistant. Answer user's questions correctly. Response in Markdown format with LaTeX syntax.",
+                "You're an AI assistant. Answer user's questions correctly. Response in Markdown format with LaTeX syntax if any formula.",
             role: ChatMessageRole.system,
           ),
         ),
