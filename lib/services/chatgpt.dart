@@ -90,7 +90,8 @@ extension on List<ChatMessage> {
     if (isEmpty) return messages;
     for (var i = length - 1; i >= 0; i--) {
       final m = this[i];
-      count = count + encoding.encode(m.role.toString() + m.content).length;
+      final content = m.content ?? "";
+      count = count + encoding.encode(m.role.toString() + content).length;
       if (count <= maxToken) {
         messages.insert(0, m);
       }
