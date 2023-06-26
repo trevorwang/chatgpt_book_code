@@ -49,8 +49,8 @@ dependencies:
   sqflite: ^2.2.6
   riverpod_annotation: ^2.0.1
   go_router: ^6.5.8
-  tiktoken: ^1.0.3
   collection: ^1.17.0
+  flutter_tiktoken: ^0.0.1
 
 dev_dependencies:
   flutter_test:

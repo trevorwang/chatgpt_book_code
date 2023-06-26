@@ -1,7 +1,7 @@
 import 'package:chatgpt/env.dart';
 import 'package:chatgpt/models/message.dart';
 import 'package:openai_api/openai_api.dart';
-import 'package:tiktoken/tiktoken.dart';
+import 'package:flutter_tiktoken/flutter_tiktoken.dart';
 
 class ChatGPTService {
   final client = OpenaiClient(

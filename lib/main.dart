@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tiktoken/flutter_tiktoken.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'injection.dart';
@@ -6,6 +7,7 @@ import 'router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TiktokenDataProcessCenter().initata();
   await setupDatabse();
   runApp(const ProviderScope(child: MyApp()));
 }
