@@ -1,5 +1,5 @@
 import 'package:openai_api/openai_api.dart';
-import 'package:tiktoken/tiktoken.dart';
+import 'package:flutter_tiktoken/flutter_tiktoken.dart';
 
 import '../injection.dart';
 import '../models/message.dart';

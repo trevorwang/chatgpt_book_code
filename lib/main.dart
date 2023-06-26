@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tiktoken/flutter_tiktoken.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'injection.dart';
@@ -9,6 +10,7 @@ import 'utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TiktokenDataProcessCenter().initata();
   await setupDatabse();
   await chatgpt.loadConfig();
   initWindow();
