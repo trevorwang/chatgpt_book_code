@@ -16,7 +16,7 @@ class ChatGPTService {
     final settings = await Settings.load();
     client.updateConfig(client.config.copyWith(
       apiKey: settings.apiKey,
-      baseUrl: settings.baseUrl,
+      baseUrl: settings.baseUrl?.isEmpty == true ? null : settings.baseUrl,
       httpProxy: settings.httpProxy,
     ));
   }
