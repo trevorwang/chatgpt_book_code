@@ -35,9 +35,9 @@ void handleError(
   try {
     await fn();
   } on CancelledException catch (e) {
-    logger.e("err: $e", e);
+    logger.e("err: $e", error: e);
   } on OpenaiException catch (e) {
-    logger.e("err: $e", e);
+    logger.e("err: $e", error: e);
     final msg = errorMessageFromCode(context, e.code);
     showErrorDialog(
       context,
@@ -48,19 +48,19 @@ void handleError(
       context,
       message: AppIntl.of(context).errorMessageNetworkError,
     );
-    logger.e("err: $err", err);
+    logger.e("err: $err", error: err);
   } on SocketException catch (err) {
     showErrorDialog(
       context,
       message: AppIntl.of(context).errorMessageNetworkError,
     );
-    logger.e("err: $err", err);
+    logger.e("err: $err", error: err);
   } catch (err) {
     showErrorDialog(
       context,
       message: err.toString(),
     );
-    logger.e("err: $err", err);
+    logger.e("err: $err", error: err);
   } finally {
     finallyFn?.call();
   }
