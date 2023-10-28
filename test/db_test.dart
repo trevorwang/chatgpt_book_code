@@ -13,7 +13,7 @@ void main() {
     sessionDao = db.sessionDao;
   });
   test("create session", () async {
-    final session = Session(title: "hello", model: Model.gpt3_5Turbo.value);
+    final session = Session(title: "hello", model: Models.gpt3_5Turbo);
     final r = await sessionDao.upsertSession(session);
     expect(r, 1);
     final s = await sessionDao.findSessionById(r);
@@ -26,7 +26,7 @@ void main() {
   });
 
   test("delete session", () async {
-    final session = Session(title: "hello", model: Model.gpt3_5Turbo.value);
+    final session = Session(title: "hello", model: Models.gpt3_5Turbo);
     final r = await sessionDao.upsertSession(session);
     expect(r, isNotNull);
     await sessionDao.deleteSession(session.copyWith(id: r));

@@ -22,7 +22,7 @@ class ChatGPTService {
   }
 
   Future<ChatCompletionResponse> sendChat(String content) async {
-    final request = ChatCompletionRequest(model: Model.gpt3_5Turbo, messages: [
+    final request = ChatCompletionRequest(model: Models.gpt3_5Turbo, messages: [
       ChatMessage(
         content: content,
         role: ChatMessageRole.user,
@@ -34,7 +34,7 @@ class ChatGPTService {
   Future streamChat(
     List<Message> messages, {
     Function(String text)? onSuccess,
-    Model model = Model.gpt3_5Turbo,
+    String model = Models.gpt3_5Turbo,
     CancellationToken? cancellationToken,
   }) async {
     final request = ChatCompletionRequest(
@@ -76,15 +76,15 @@ class ChatGPTService {
 }
 
 final maxTokens = {
-  Model.gpt3_5Turbo: 4096 - 200,
-  Model.gpt4: 8192 - 300,
+  Models.gpt3_5Turbo: 4096 - 200,
+  Models.gpt4: 8192 - 300,
 };
 
 extension on List<ChatMessage> {
-  List<ChatMessage> limitMessages({Model model = Model.gpt3_5Turbo}) {
+  List<ChatMessage> limitMessages({String model = Models.gpt3_5Turbo}) {
     assert(maxTokens[model] != null, 'Model not supported');
     var messages = <ChatMessage>[];
-    final encoding = encodingForModel(model.value);
+    final encoding = encodingForModel(model);
     final maxToken = maxTokens[model]!;
     var count = 0;
     if (isEmpty) return messages;

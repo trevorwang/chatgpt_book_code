@@ -183,7 +183,7 @@ __sendMessage(WidgetRef ref, String content) async {
 
   var sessionId = active?.id ?? 0;
   if (sessionId <= 0) {
-    active = Session(title: content, model: uiState.model.value);
+    active = Session(title: content, model: uiState.model);
     // final id = await db.sessionDao.upsertSession(active);
     active = await ref
         .read(sessionStateNotifierProvider.notifier)

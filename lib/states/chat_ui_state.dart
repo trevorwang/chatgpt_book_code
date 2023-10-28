@@ -8,7 +8,7 @@ part 'chat_ui_state.freezed.dart';
 class ChatUiState with _$ChatUiState {
   const factory ChatUiState({
     @Default(false) bool requestLoading,
-    @Default(Model.gpt3_5Turbo) Model model,
+    @Default(Models.gpt3_5Turbo) String model,
     CancellationToken? cancellationToken,
   }) = _ChatUiState;
 }
@@ -22,7 +22,7 @@ class ChatUiStateProvider extends StateNotifier<ChatUiState> {
     );
   }
 
-  set model(Model model) {
+  set model(String model) {
     state = state.copyWith(
       model: model,
     );

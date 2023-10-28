@@ -29,13 +29,13 @@ void main() {
     ));
     await tester.pumpAndSettle();
     expect(find.text('GPT-3.5'), findsOneWidget);
-    expect(find.byType(DropdownMenuItem<Model>), findsWidgets);
+    expect(find.byType(DropdownMenuItem<String>), findsWidgets);
   });
 
   testWidgets('GptModel value', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     const dropdown = GptModelWidget(
-      active: Model.gpt4,
+      active: Models.gpt4,
     );
     await tester.pumpWidget(const MaterialApp(
       supportedLocales: AppLocalizations.supportedLocales,
@@ -49,7 +49,7 @@ void main() {
     ));
     await tester.pumpAndSettle();
     expect(find.text('GPT-3.5'), findsNothing);
-    expect(find.byType(DropdownMenuItem<Model>), findsNothing);
+    expect(find.byType(DropdownMenuItem<String>), findsNothing);
     expect(find.text('GPT-4'), findsOneWidget);
   });
 }

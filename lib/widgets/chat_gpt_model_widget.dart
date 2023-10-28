@@ -5,32 +5,32 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:openai_api/openai_api.dart';
 
 class GptModelWidget extends HookWidget {
-  final Function(Model model)? onModelChanged;
+  final Function(String model)? onModelChanged;
   const GptModelWidget({
     super.key,
     required this.active,
     this.onModelChanged,
   });
 
-  final Model? active;
+  final String? active;
 
   @override
   Widget build(BuildContext context) {
-    final state = useState<Model>(Model.gpt3_5Turbo);
+    final state = useState<String>(Models.gpt3_5Turbo);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(AppIntl.of(context).modelSelectTitle),
         active == null
-            ? DropdownButton<Model>(
-                items: [Model.gpt3_5Turbo, Model.gpt4].map((e) {
+            ? DropdownButton<String>(
+                items: [Models.gpt3_5Turbo, Models.gpt4].map((e) {
                   return DropdownMenuItem(
                     value: e,
                     child: Text(e.label),
                   );
                 }).toList(),
                 value: state.value,
-                onChanged: (Model? item) {
+                onChanged: (String? item) {
                   if (item == null) return;
                   state.value = item;
                   onModelChanged?.call(item);
@@ -45,22 +45,21 @@ class GptModelWidget extends HookWidget {
   }
 }
 
-extension on Model {
+extension on String {
   String get label {
     switch (this) {
-      case Model.gpt3_5Turbo:
+      case Models.gpt3_5Turbo:
         return 'GPT-3.5';
-      case Model.gpt4:
+      case Models.gpt4:
         return 'GPT-4';
       default:
-        return value;
+        return this;
     }
   }
 }
 
 extension ModelString on String {
-  Model toModel() {
-    return Model.values.where((e) => e.value == this).firstOrNull ??
-        Model.gpt3_5Turbo;
+  String toModel() {
+    return this;
   }
 }

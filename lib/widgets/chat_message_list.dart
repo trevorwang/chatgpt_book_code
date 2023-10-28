@@ -298,16 +298,16 @@ class MessageContentWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ...MarkdownGenerator(
-          config: config.copy(configs: [
-            config.pre.copy(wrapper: codeWrapper),
-          ]),
           generators: [
             latexGenerator,
           ],
-          inlineSyntaxes: [
+          inlineSyntaxList: [
             LatexSyntax(),
           ],
-        ).buildWidgets(message.content),
+        ).buildWidgets(message.content,
+            config: config.copy(configs: [
+              config.pre.copy(wrapper: codeWrapper),
+            ])),
         if (typing) const TypingCursor(),
       ],
     );
