@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_hooks: ^0.20.0
   hooks_riverpod: ^2.3.2
-  openai_api: ^0.1.1
+  openai_api: ^0.1.2
   envied: ^0.3.0
   logger: ^2.0.1
   uuid: ^3.0.7
