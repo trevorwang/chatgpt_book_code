@@ -11,7 +11,7 @@ import 'dao/session_dao.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 3, entities: [Message, Session])
+@Database(version: 4, entities: [Message, Session])
 @TypeConverters([DateTimeConverter])
 abstract class AppDatabase extends FloorDatabase {
   MessageDao get messageDao;
@@ -34,6 +34,10 @@ Future<AppDatabase> initDatabase() async {
     Migration(2, 3, (database) async {
       await database.execute('ALTER TABLE Session ADD COLUMN model TEXT');
       await database.execute("UPDATE Session SET model = 'gpt-3.5-turbo'");
-    })
+    }),
+    Migration(3, 4, (database) async {
+      await database.execute('ALTER TABLE Session ADD COLUMN type INTEGER');
+      await database.execute('UPDATE Session SET type = 0');
+    }),
   ]).build();
 }
