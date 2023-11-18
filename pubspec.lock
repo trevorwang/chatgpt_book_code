@@ -173,10 +173,10 @@ packages:
     dependency: transitive
     description:
       name: cancellation_token_http
-      sha256: bb91655e2e47d6274b681261ee6a687b7aa9023f49cfc28f42d095b2f86febc3
+      sha256: "37ad2a20dba02aeb1f0a4d845e7a57eebacdb709e1186e0491e7cd81c559c4ff"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.3.0"
+    version: "2.0.0"
   characters:
     dependency: transitive
     description:
@@ -713,10 +713,10 @@ packages:
     dependency: "direct main"
     description:
       name: openai_api
-      sha256: c90d09f4373874892870b1d7fb2fe1e4c80f4331e712be82d22741387afc721f
+      sha256: "8ec209c919124176f57e42149b0d9b89d0961e5bc43953eb3ffbf6664543e151"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.2"
+    version: "0.3.3"
   package_config:
     dependency: transitive
     description:

@@ -15,14 +15,18 @@ class GptModelWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = useState<String>(Models.gpt3_5Turbo);
+    final state = useState<String>(Models.gpt3_5Turbo_16k_0613);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(AppIntl.of(context).modelSelectTitle),
         active == null
             ? DropdownButton<String>(
-                items: [Models.gpt3_5Turbo, Models.gpt4].map((e) {
+                items: [
+                  Models.gpt3_5Turbo_16k_0613,
+                  Models.gpt4_1106VisonPreview,
+                  Models.gpt4_1106Preview,
+                ].map((e) {
                   return DropdownMenuItem(
                     value: e,
                     child: Text(e.label),
@@ -47,10 +51,16 @@ class GptModelWidget extends HookWidget {
 extension on String {
   String get label {
     switch (this) {
+      case Models.gpt3_5Turbo_16k_0613:
+        return 'GPT-3.5';
       case Models.gpt3_5Turbo:
         return 'GPT-3.5';
       case Models.gpt4:
         return 'GPT-4';
+      case Models.gpt4_1106VisonPreview:
+        return 'GPT-4 Vision';
+      case Models.gpt4_1106Preview:
+        return 'GPT-4 Turbo';
       default:
         return this;
     }

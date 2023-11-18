@@ -39,6 +39,7 @@ class ChatGPTService {
   }) async {
     final request = ChatCompletionRequest(
       model: model,
+      maxTokens: model == Models.gpt4_1106VisonPreview ? 2000 : null,
       stream: true,
       messages: messages.toChatMessages().limitMessages()
         ..insert(
@@ -80,7 +81,7 @@ final maxTokens = {
   Models.gpt4: 8192 - 300,
 };
 
-extension on List<ChatMessage> {
+extension on List {
   List<ChatMessage> limitMessages({String model = Models.gpt3_5Turbo}) {
     assert(maxTokens[model] != null, 'Model not supported');
     var messages = <ChatMessage>[];
