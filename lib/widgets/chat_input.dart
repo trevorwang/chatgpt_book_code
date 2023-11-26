@@ -74,7 +74,7 @@ class AudioInputWidget extends HookConsumerWidget {
                     final text = await chatgpt.speechToText(path);
                     transcripting.value = false;
                     if (text.trim().isNotEmpty) {
-                      await __sendMessage(ref, text);
+                      await __sendMessage(ref, text, textMode: false);
                     }
                   }
                 }, finallyFn: () => transcripting.value = false);
@@ -168,15 +168,19 @@ class TextInputWidget extends HookConsumerWidget {
 }
 
 // 增加WidgetRef
-_sendMessage(WidgetRef ref, TextEditingController controller) async {
+_sendMessage(
+  WidgetRef ref,
+  TextEditingController controller, {
+  bool textMode = true,
+}) async {
   final loading = ref.watch(chatUiProvider).requestLoading;
   if (loading) return;
   final content = controller.text;
   controller.clear();
-  return __sendMessage(ref, content);
+  return __sendMessage(ref, content, textMode: textMode);
 }
 
-__sendMessage(WidgetRef ref, String content) async {
+__sendMessage(WidgetRef ref, String content, {bool textMode = true}) async {
   Message message = _createMessage(content);
   final uiState = ref.watch(chatUiProvider);
   var active = ref.watch(activeSessionProvider);
@@ -198,7 +202,7 @@ __sendMessage(WidgetRef ref, String content) async {
         message.copyWith(sessionId: sessionId),
       ); // 添加消息
 
-  _requestChatGPT(ref, content, sessionId: sessionId);
+  _requestChatGPT(ref, content, sessionId: sessionId, textMode: textMode);
 }
 
 Message _createMessage(
@@ -221,6 +225,7 @@ _requestChatGPT(
   WidgetRef ref,
   String content, {
   int? sessionId,
+  bool textMode = true,
 }) async {
   final uiState = ref.watch(chatUiProvider);
   ref.read(chatUiProvider.notifier).setRequestLoading(true);
@@ -232,8 +237,10 @@ _requestChatGPT(
     final token = CancellationToken();
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
     ref.read(chatUiProvider.notifier).cancellationToken = token;
-    await chatgpt.streamChat(
+    await chatgpt.chat(
       messages,
+      textMode: textMode,
+      stream: textMode,
       model: activeSession?.model.toModel() ?? uiState.model,
       onSuccess: (text) {
         final message =

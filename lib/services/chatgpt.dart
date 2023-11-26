@@ -1,4 +1,3 @@
-import 'package:flutter_math_fork/ast.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:flutter_tiktoken/flutter_tiktoken.dart';
 
@@ -22,46 +21,52 @@ class ChatGPTService {
     ));
   }
 
-  Future<ChatCompletionResponse> sendChat(String content) async {
-    final request = ChatCompletionRequest(model: Models.gpt3_5Turbo, messages: [
-      ChatMessage(
-        content: content,
-        role: ChatMessageRole.user,
-      )
-    ]);
-    return await client.sendChatCompletion(request);
-  }
-
-  Future streamChat(
+  Future chat(
     List<Message> messages, {
     Function(String text)? onSuccess,
     String model = Models.gpt3_5Turbo,
     CancellationToken? cancellationToken,
+    bool textMode = true,
+    bool stream = true,
   }) async {
+    final systemMsg = textMode
+        ? ChatMessage.system(
+            content:
+                "You're an AI assistant. Answer user's questions correctly. Response in Markdown format with LaTeX syntax if any formula.",
+          )
+        : ChatMessage.system(
+            content:
+                "You're an AI assistant. Answer user's questions correctly, shortly and as quickly as possible.");
+
     final request = ChatCompletionRequest(
       model: model,
       maxTokens: maxTokens[model],
-      stream: true,
+      stream: stream,
       messages: messages.toChatMessages().limitMessages()
         ..insert(
           0,
-          const ChatMessage(
-            content:
-                "You're an AI assistant. Answer user's questions correctly. Response in Markdown format with LaTeX syntax if any formula.",
-            role: ChatMessageRole.system,
-          ),
+          systemMsg,
         ),
     );
-    return await client.sendChatCompletionStream(
-      request,
-      onSuccess: (p0) {
-        final text = p0.choices.first.delta?.content;
-        if (text != null) {
-          onSuccess?.call(text);
-        }
-      },
-      cancellationToken: cancellationToken,
-    );
+
+    if (stream) {
+      return await client.sendChatCompletionStream(
+        request,
+        onSuccess: (p0) {
+          final text = p0.choices.first.delta?.content;
+          if (text != null) {
+            onSuccess?.call(text);
+          }
+        },
+        cancellationToken: cancellationToken,
+      );
+    } else {
+      final res = await client.sendChatCompletion(
+        request,
+        cancellationToken: cancellationToken,
+      );
+      onSuccess?.call(res.choices.first.message?.content);
+    }
   }
 
   Future<String> speechToText(
@@ -74,6 +79,16 @@ class ChatGPTService {
     );
     logger.v(res);
     return res.text;
+  }
+
+  Future<List<int>> textToSpeech(
+    String text, {
+    CancellationToken? cancellationToken,
+  }) async {
+    return await client.createSpeech(
+      SpeechRequest(voice: 'alloy', input: text),
+      cancellationToken: cancellationToken,
+    );
   }
 }
 
