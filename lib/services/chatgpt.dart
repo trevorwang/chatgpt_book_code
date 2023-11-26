@@ -1,3 +1,4 @@
+import 'package:flutter_math_fork/ast.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:flutter_tiktoken/flutter_tiktoken.dart';
 
@@ -39,7 +40,7 @@ class ChatGPTService {
   }) async {
     final request = ChatCompletionRequest(
       model: model,
-      maxTokens: model == Models.gpt4_1106VisonPreview ? 2000 : null,
+      maxTokens: maxTokens[model],
       stream: true,
       messages: messages.toChatMessages().limitMessages()
         ..insert(
@@ -67,7 +68,7 @@ class ChatGPTService {
     String path, {
     CancellationToken? cancellationToken,
   }) async {
-    final res = await client.createTrascription(
+    final res = await client.createTranscription(
       TranscriptionRequest(file: path),
       cancellationToken: cancellationToken,
     );
@@ -79,6 +80,7 @@ class ChatGPTService {
 final maxTokens = {
   Models.gpt3_5Turbo: 4096 - 200,
   Models.gpt4: 8192 - 300,
+  Models.gpt4_1106VisonPreview: 2000,
 };
 
 extension on List {
