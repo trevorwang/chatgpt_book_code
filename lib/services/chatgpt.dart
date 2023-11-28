@@ -36,11 +36,11 @@ class ChatGPTService {
           )
         : ChatMessage.system(
             content:
-                "You're an AI assistant. Answer user's questions correctly, shortly and as quickly as possible.");
+                "You're an AI Vocie assistant. Answer user's questions correctly, shortly and as quickly as possible. Less than 100 words.");
 
     final request = ChatCompletionRequest(
       model: model,
-      maxTokens: maxTokens[model],
+      maxTokens: textMode ? maxTokens[model] : 500,
       stream: stream,
       messages: messages.toChatMessages().limitMessages()
         ..insert(

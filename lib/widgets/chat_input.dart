@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:chatgpt/intl.dart';
+import 'package:chatgpt/services/audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:openai_api/openai_api.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../injection.dart';
 import '../models/message.dart';
@@ -243,6 +247,9 @@ _requestChatGPT(
       stream: textMode,
       model: activeSession?.model.toModel() ?? uiState.model,
       onSuccess: (text) {
+        if (!textMode) {
+          _tts(text);
+        }
         final message =
             _createMessage(text, id: id, isUser: false, sessionId: sessionId);
         ref.read(messageProvider.notifier).upsertMessage(message);
@@ -252,4 +259,17 @@ _requestChatGPT(
   }, finallyFn: () {
     ref.read(chatUiProvider.notifier).setRequestLoading(false);
   });
+}
+
+_tts(String text) async {
+  final audio = await chatgpt.textToSpeech(text);
+  final path = await getTemporaryDirectory();
+
+  final d = Directory("${path.absolute.path}/tts");
+  await d.create(recursive: true);
+
+  final file = File("${d.path}/${DateTime.now().microsecondsSinceEpoch}.mp3");
+  await file.writeAsBytes(audio);
+  logger.t('start path: ${file.path}');
+  AudioPlayerService.instance.play2(file);
 }
